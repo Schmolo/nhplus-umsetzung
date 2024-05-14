@@ -267,6 +267,7 @@ public class AllPatientController {
         }
 
         return !this.textFieldFirstName.getText().isBlank() && !this.textFieldSurname.getText().isBlank() &&
-                !this.textFieldDateOfBirth.getText().isBlank() && !this.textFieldCareLevel.getText().isBlank();
+                !this.textFieldDateOfBirth.getText().isBlank() && !this.textFieldCareLevel.getText().isBlank() &&
+                !this.textFieldRoomNumber.getText().isBlank();
     }
 }
