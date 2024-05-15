@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane fx:id="mainBorderPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="688.0" prefWidth="926.0" xmlns="http://javafx.com/javafx/10.0.2-internal" xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.hitec.nhplus.controller.LoginController">
+    <center>
+        <VBox id="vBox" alignment="CENTER" spacing="50.0" styleClass="vBox" stylesheets="@Application.css">
+            <TextField fx:id="firstnameField" alignment="CENTER" maxWidth="300" promptText="Firstname"/>
+            <TextField fx:id="surnameField" alignment="CENTER" maxWidth="300" promptText="Surname"/>
+            <PasswordField fx:id="passwordField" alignment="CENTER" maxWidth="300" promptText="Password" onKeyPressed="#handleEnterPressed"/>
+            <Button text="Login" onAction="#login"/>
+        </VBox>
+    </center>
+</BorderPane>
