@@ -7,35 +7,35 @@ import javafx.beans.property.SimpleStringProperty;
 
 import java.time.LocalDate;
 
-public class Pflegekraft extends Person {
+public class Caregiver extends Person {
     private SimpleLongProperty pid;
     private final SimpleStringProperty dateOfBirth;
     private final SimpleStringProperty password_hash;
 
     /**
-     * This is a constructor for the Pflegekraft class.
+     * This is a constructor for the Caregiver class.
      *
-     * @param firstName The first name of the Pflegekraft.
-     * @param surname The surname of the Pflegekraft.
-     * @param dateOfBirth The date of birth of the Pflegekraft. It is a LocalDate object.
-     * @param password The password for the Pflegekraft. This is not the actual password, but a string that will be hashed to create the password.
+     * @param firstName The first name of the Caregiver.
+     * @param surname The surname of the Caregiver.
+     * @param dateOfBirth The date of birth of the Caregiver. It is a LocalDate object.
+     * @param password The password for the Caregiver. This is not the actual password, but a string that will be hashed to create the password.
      */
-    public Pflegekraft(String firstName, String surname, LocalDate dateOfBirth, String password) {
+    public Caregiver(String firstName, String surname, LocalDate dateOfBirth, String password) {
         super(firstName, surname);
         this.dateOfBirth = new SimpleStringProperty(DateConverter.convertLocalDateToString(dateOfBirth));
         this.password_hash = new SimpleStringProperty(PasswordUtil.generatePassword(password));
     }
 
     /**
-     * This is an overloaded constructor for the Pflegekraft class.
+     * This is an overloaded constructor for the Caregiver class.
      *
-     * @param pid The unique identifier for the Pflegekraft.
-     * @param firstName The first name of the Pflegekraft.
-     * @param surname The surname of the Pflegekraft.
-     * @param dateOfBirth The date of birth of the Pflegekraft. It is a LocalDate object.
-     * @param password_hash The password hash for the Pflegekraft.
+     * @param pid The unique identifier for the Caregiver.
+     * @param firstName The first name of the Caregiver.
+     * @param surname The surname of the Caregiver.
+     * @param dateOfBirth The date of birth of the Caregiver. It is a LocalDate object.
+     * @param password_hash The password hash for the Caregiver.
      */
-    public Pflegekraft(long pid, String firstName, String surname, LocalDate dateOfBirth, String password_hash) {
+    public Caregiver(long pid, String firstName, String surname, LocalDate dateOfBirth, String password_hash) {
         super(firstName, surname);
         this.pid = new SimpleLongProperty(pid);
         this.dateOfBirth = new SimpleStringProperty(DateConverter.convertLocalDateToString(dateOfBirth));
@@ -76,7 +76,7 @@ public class Pflegekraft extends Person {
 
     @Override
     public String toString() {
-        return "Pflegekraft\n" +
+        return "Caregiver\n" +
                 "pid: " + pid.get() + "\n" +
                 "firstName: " + getFirstName() + "\n" +
                 "surname: " + getSurname() + "\n" +
