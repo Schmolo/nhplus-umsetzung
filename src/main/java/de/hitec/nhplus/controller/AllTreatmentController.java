@@ -49,6 +49,9 @@ public class AllTreatmentController {
     @FXML
     private Button buttonDelete;
 
+    @FXML
+    private Button buttonLock;
+
     private final ObservableList<Treatment> treatments = FXCollections.observableArrayList();
     private TreatmentDao dao;
     private final ObservableList<String> patientSelection = FXCollections.observableArrayList();
@@ -72,6 +75,16 @@ public class AllTreatmentController {
         this.tableView.getSelectionModel().selectedItemProperty().addListener(
                 (observableValue, oldTreatment, newTreatment) ->
                         AllTreatmentController.this.buttonDelete.setDisable(newTreatment == null));
+
+        this.buttonLock.setDisable(true);
+        this.tableView.getSelectionModel().selectedItemProperty().addListener(
+                (observableValue, oldTreatment, newTreatment) ->
+                        AllTreatmentController.this.buttonLock.setDisable(newTreatment == null));
+
+
+
+
+
 
         this.createComboBoxData();
     }
@@ -145,6 +158,23 @@ public class AllTreatmentController {
             exception.printStackTrace();
         }
     }
+
+
+    public void handleLock() {
+        int index = this.tableView.getSelectionModel().getSelectedIndex();
+        Treatment t = this.treatments.remove(index);
+
+
+        TreatmentDao dao = DaoFactory.getDaoFactory().createTreatmentDao();
+        try {
+            dao.deleteById(t.getTid());
+        } catch (SQLException exception) {
+            exception.printStackTrace();
+        }
+    }
+
+
+
 
     @FXML
     public void handleNewTreatment() {

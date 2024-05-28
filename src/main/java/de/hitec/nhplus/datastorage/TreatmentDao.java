@@ -80,7 +80,7 @@ public class TreatmentDao extends DaoImp<Treatment> {
         LocalTime begin = DateConverter.convertStringToLocalTime(result.getString(4));
         LocalTime end = DateConverter.convertStringToLocalTime(result.getString(5));
         return new Treatment(result.getLong(1), result.getLong(2),
-                date, begin, end, result.getString(6), result.getString(7));
+                date, begin, end, result.getString(6), result.getString(7), result.getBoolean(8), result.getString(9));
     }
 
     /**
@@ -116,7 +116,7 @@ public class TreatmentDao extends DaoImp<Treatment> {
             LocalTime begin = DateConverter.convertStringToLocalTime(result.getString(4));
             LocalTime end = DateConverter.convertStringToLocalTime(result.getString(5));
             Treatment treatment = new Treatment(result.getLong(1), result.getLong(2),
-                    date, begin, end, result.getString(6), result.getString(7));
+                    date, begin, end, result.getString(6), result.getString(7), false, null);
             list.add(treatment);
         }
         return list;

@@ -51,6 +51,9 @@ public class AllPatientController {
     private Button buttonDelete;
 
     @FXML
+    private Button buttonLock;
+
+    @FXML
     private Button buttonAdd;
 
     @FXML
@@ -111,6 +114,13 @@ public class AllPatientController {
                 AllPatientController.this.buttonDelete.setDisable(newPatient == null);
             }
         });
+
+
+
+
+
+
+
 
         this.buttonAdd.setDisable(true);
         ChangeListener<String> inputNewPatientListener = (observableValue, oldText, newText) ->
@@ -223,6 +233,22 @@ public class AllPatientController {
             }
         }
     }
+
+
+    @FXML
+    public void handleLock() {
+        Patient selectedItem = this.tableView.getSelectionModel().getSelectedItem();
+        if (selectedItem != null) {
+            try {
+                DaoFactory.getDaoFactory().createPatientDAO().deleteById(selectedItem.getPid());
+                this.tableView.getItems().remove(selectedItem);
+            } catch (SQLException exception) {
+                exception.printStackTrace();
+            }
+        }
+    }
+
+
 
     /**
      * This method handles the events fired by the button to add a patient. It collects the data from the
