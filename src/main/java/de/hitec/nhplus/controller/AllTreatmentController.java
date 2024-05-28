@@ -19,6 +19,7 @@ import de.hitec.nhplus.model.Treatment;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Optional;
 
 public class AllTreatmentController {
 
@@ -161,17 +162,45 @@ public class AllTreatmentController {
 
 
     public void handleLock() {
-        int index = this.tableView.getSelectionModel().getSelectedIndex();
-        Treatment t = this.treatments.remove(index);
+        // Erstellen eines Bestätigungs-Dialogs
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setTitle("Behandlung sperren");
+        alert.setHeaderText("Möchten Sie diese Behandlung wirklich sperren?");
+        alert.setContentText("Eine gesperrte Behandlung kann nicht mehr bearbeitet werden\n" +
+                "und wird innerhalb von 10 Jahren gelöscht,\n" +
+                "dies ist endgültig!");
 
+        // Erstellen von zwei Schaltflächen: Sperren und Abbrechen
+        ButtonType buttonTypeLock = new ButtonType("Sperren", ButtonBar.ButtonData.OK_DONE);
+        ButtonType buttonTypeCancel = new ButtonType("Abbrechen", ButtonBar.ButtonData.CANCEL_CLOSE);
 
-        TreatmentDao dao = DaoFactory.getDaoFactory().createTreatmentDao();
-        try {
-            dao.deleteById(t.getTid());
-        } catch (SQLException exception) {
-            exception.printStackTrace();
+        // Hinzufügen der Schaltflächen zum Dialog
+        alert.getButtonTypes().setAll(buttonTypeLock, buttonTypeCancel);
+
+        // Anzeigen des Dialogs und Warten auf die Auswahl des Benutzers
+        Optional<ButtonType> result = alert.showAndWait();
+
+        // Überprüfen, ob die "Sperren"-Schaltfläche ausgewählt wurde
+        if (result.isPresent() && result.get() == buttonTypeLock) {
+            // Den Index der ausgewählten Behandlung in der Tabelle ermitteln
+            int index = this.tableView.getSelectionModel().getSelectedIndex();
+            // Die ausgewählte Behandlung aus der Liste entfernen
+            Treatment t = this.treatments.remove(index);
+
+            // DAO (Data Access Object) für die Behandlung erstellen
+            TreatmentDao dao = DaoFactory.getDaoFactory().createTreatmentDao();
+            try {
+                // Behandlung in der Datenbank anhand der ID löschen
+                dao.deleteById(t.getTid());
+            } catch (SQLException exception) {
+                // Ausnahme (Fehler) drucken, falls ein SQL-Fehler auftritt
+                exception.printStackTrace();
+            }
         }
+        // Wenn "Abbrechen" gewählt wurde, passiert nichts und die Methode endet
     }
+
+
 
 
 
