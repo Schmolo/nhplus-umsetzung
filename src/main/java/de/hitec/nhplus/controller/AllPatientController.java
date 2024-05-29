@@ -1,5 +1,6 @@
 package de.hitec.nhplus.controller;
 
+import javafx.scene.control.Tooltip;
 import de.hitec.nhplus.datastorage.DaoFactory;
 import de.hitec.nhplus.datastorage.PatientDao;
 import de.hitec.nhplus.model.Patient;
@@ -9,10 +10,7 @@ import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
-import javafx.scene.control.Button;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.cell.TextFieldTableCell;
 import java.io.BufferedWriter;
@@ -55,6 +53,12 @@ public class AllPatientController {
 
     @FXML
     private Button buttonAdd;
+
+    @FXML
+    private Button buttonExport;
+
+    @FXML
+    private Button buttonSelectAll;
 
     @FXML
     private TextField textFieldSurname;
@@ -103,8 +107,15 @@ public class AllPatientController {
         this.columnRoomNumber.setCellValueFactory(new PropertyValueFactory<>("roomNumber"));
         this.columnRoomNumber.setCellFactory(TextFieldTableCell.forTableColumn());
 
+        Tooltip exportTooltip = new Tooltip("To export multiple users data please hold control and select the users then click on export.");
+        Tooltip.install(buttonExport, exportTooltip);
+
+        Tooltip selectAllTooltip = new Tooltip("Click to select all patients.");
+        Tooltip.install(buttonSelectAll, selectAllTooltip);
+
 
         //Anzeigen der Daten
+        this.tableView.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
         this.tableView.setItems(this.patients);
 
         this.buttonDelete.setDisable(true);
@@ -256,16 +267,20 @@ public class AllPatientController {
      */
     @FXML
     public void handleExport() {
-        Patient selectedPatient = this.tableView.getSelectionModel().getSelectedItem();
-        if (selectedPatient != null) {
+        ObservableList<Patient> selectedPatients = this.tableView.getSelectionModel().getSelectedItems();
+        if (selectedPatients != null && !selectedPatients.isEmpty()) {
             try {
-                exportPatientData(selectedPatient);
+                exportPatientData(selectedPatients);
             } catch (Exception e) {
                 e.printStackTrace();
             }
         }
     }
 
+    @FXML
+    public void handleSelectAll() {
+        this.tableView.getSelectionModel().selectAll();
+    }
 
 
     /**
@@ -294,26 +309,17 @@ public class AllPatientController {
     }
 
 
-    private void exportPatientData(Patient patient) throws Exception {
+    private void exportPatientData(ObservableList<Patient> patients) throws Exception {
         if ("CSV".equals("CSV")) {
-            exportToCSV(patient);
+            exportToCSV(patients);
         }
     }
 
-
-    private void exportToCSV(Patient patient) throws IOException {
+    private void exportToCSV(ObservableList<Patient> patients) throws IOException {
         // Create a temporary file for CSV export
         File tempFile = File.createTempFile("export", ".csv");
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(tempFile))) {
             String[] header = { "ID", "First Name", "Surname", "Date of Birth", "Care Level", "Room Number" };
-            String[] data = {
-                    String.valueOf(patient.getPid()),
-                    patient.getFirstName(),
-                    patient.getSurname(),
-                    patient.getDateOfBirth().toString(),
-                    patient.getCareLevel(),
-                    patient.getRoomNumber()
-            };
 
             // Write the header to the CSV file
             for (int i = 0; i < header.length; i++) {
@@ -322,10 +328,21 @@ public class AllPatientController {
             writer.newLine();
 
             // Write the data to the CSV file
-            for (int i = 0; i < data.length; i++) {
-                writer.write(data[i] + ", ");
+            for (Patient patient : patients) {
+                String[] data = {
+                        String.valueOf(patient.getPid()),
+                        patient.getFirstName(),
+                        patient.getSurname(),
+                        patient.getDateOfBirth().toString(),
+                        patient.getCareLevel(),
+                        patient.getRoomNumber()
+                };
+
+                for (int i = 0; i < data.length; i++) {
+                    writer.write(data[i] + ", ");
+                }
+                writer.newLine();
             }
-            writer.newLine();
         }
         // Open the temporary file
         openFile(tempFile);
