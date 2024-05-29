@@ -2,6 +2,8 @@ package de.hitec.nhplus.controller;
 
 import de.hitec.nhplus.datastorage.DaoFactory;
 import de.hitec.nhplus.datastorage.PatientDao;
+import de.hitec.nhplus.model.Patient;
+import de.hitec.nhplus.utils.DateConverter;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
@@ -13,9 +15,10 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.cell.TextFieldTableCell;
-import de.hitec.nhplus.model.Patient;
-import de.hitec.nhplus.utils.DateConverter;
-
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.sql.SQLException;
 import java.time.LocalDate;
 
@@ -247,6 +250,25 @@ public class AllPatientController {
     }
 
     /**
+     * This method handles the events fired by the button to export a patient's data. It retrieves the selected
+     * <code>Patient</code> from the <code>TableView</code>, and if a patient is selected, it calls the method
+     * to export the patient's data. The export format can is "CSV".
+     */
+    @FXML
+    public void handleExport() {
+        Patient selectedPatient = this.tableView.getSelectionModel().getSelectedItem();
+        if (selectedPatient != null) {
+            try {
+                exportPatientData(selectedPatient);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+
+
+    /**
      * Clears all contents from all <code>TextField</code>s.
      */
     private void clearTextfields() {
@@ -269,5 +291,50 @@ public class AllPatientController {
         return !this.textFieldFirstName.getText().isBlank() && !this.textFieldSurname.getText().isBlank() &&
                 !this.textFieldDateOfBirth.getText().isBlank() && !this.textFieldCareLevel.getText().isBlank() &&
                 !this.textFieldRoomNumber.getText().isBlank();
+    }
+
+
+    private void exportPatientData(Patient patient) throws Exception {
+        if ("CSV".equals("CSV")) {
+            exportToCSV(patient);
+        }
+    }
+
+
+    private void exportToCSV(Patient patient) throws IOException {
+        // Create a temporary file for CSV export
+        File tempFile = File.createTempFile("export", ".csv");
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(tempFile))) {
+            String[] header = { "ID", "First Name", "Surname", "Date of Birth", "Care Level", "Room Number" };
+            String[] data = {
+                    String.valueOf(patient.getPid()),
+                    patient.getFirstName(),
+                    patient.getSurname(),
+                    patient.getDateOfBirth().toString(),
+                    patient.getCareLevel(),
+                    patient.getRoomNumber()
+            };
+
+            // Write the header to the CSV file
+            for (int i = 0; i < header.length; i++) {
+                writer.write(header[i] + ", ");
+            }
+            writer.newLine();
+
+            // Write the data to the CSV file
+            for (int i = 0; i < data.length; i++) {
+                writer.write(data[i] + ", ");
+            }
+            writer.newLine();
+        }
+        // Open the temporary file
+        openFile(tempFile);
+    }
+
+// Method to open a file using the default system application
+    private void openFile(File file) throws IOException {
+        if (java.awt.Desktop.isDesktopSupported()) {
+            java.awt.Desktop.getDesktop().open(file);
+        }
     }
 }
