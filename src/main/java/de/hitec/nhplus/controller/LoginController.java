@@ -5,6 +5,7 @@ import de.hitec.nhplus.model.Caregiver;
 import de.hitec.nhplus.service.CaregiverService;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.scene.input.KeyEvent;
@@ -16,6 +17,9 @@ import java.io.IOException;
 public class LoginController {
 
     public BorderPane mainBorderPane;
+
+    @FXML
+    private Label errorLabel;
 
     @FXML
     private TextField firstnameField;
@@ -43,6 +47,8 @@ public class LoginController {
             } catch (IOException exception) {
                 exception.printStackTrace();
             }
+        } else {
+            errorLabel.setText("Login failed. Please check your credentials.");
         }
     }
 
