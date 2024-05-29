@@ -14,6 +14,9 @@ import java.sql.SQLException;
 public class CaregiverService {
 
     public Caregiver authenticate(String firstname, String surname, String password) {
+        if (firstname == null || surname == null || password == null) {
+            return null;
+        }
         Caregiver caregiver = null;
         try {
             Connection connection = ConnectionBuilder.getConnection();
@@ -34,6 +37,8 @@ public class CaregiverService {
                         DateConverter.convertStringToLocalDate(resultSet.getString("dateOfBirth")),
                         password_hash
                 );
+            } else {
+                return null;
             }
         } catch (SQLException e) {
             e.printStackTrace();
