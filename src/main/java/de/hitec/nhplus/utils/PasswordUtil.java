@@ -47,6 +47,7 @@ public class PasswordUtil {
     }
 
     public static boolean checkPassword(String password, String hashedPassword) {
+        if (password == null || hashedPassword == null) { return false; }
         String[] parts = hashedPassword.split(DELIMITER);
         if (parts.length != 2) {
             throw new IllegalArgumentException("Invalid hashed password");
@@ -57,7 +58,7 @@ public class PasswordUtil {
     }
 
     public static void main(String[] args) {
-        String password = "password\uD83D\uDD25";
+        String password = "ø1§$%&/()=?``%password\uD83D\uDD25::::::";
         String hashedPassword = generatePassword(password);
         Boolean checkPassword = checkPassword(password, generatePassword(password));
         System.out.println(password);
