@@ -3,6 +3,7 @@ package de.hitec.nhplus.controller;
 import de.hitec.nhplus.Main;
 import de.hitec.nhplus.model.Caregiver;
 import de.hitec.nhplus.service.CaregiverService;
+import de.hitec.nhplus.service.Session;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
@@ -41,6 +42,7 @@ public class LoginController {
 
         Caregiver caregiver = caregiverService.authenticate(firstname, surname, password);
         if (caregiver != null) {
+            Session.getInstance().setLoggedInCaregiver(caregiver);
             FXMLLoader loader = new FXMLLoader(Main.class.getResource("/de/hitec/nhplus/MainWindowView.fxml"));
             try {
                 mainBorderPane.setCenter(loader.load());

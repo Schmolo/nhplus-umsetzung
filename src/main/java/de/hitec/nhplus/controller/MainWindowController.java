@@ -1,6 +1,7 @@
 package de.hitec.nhplus.controller;
 
 import de.hitec.nhplus.Main;
+import de.hitec.nhplus.service.Session;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -37,6 +38,7 @@ public class MainWindowController {
     }
 
     public void handleLogout(ActionEvent actionEvent) {
+        Session.getInstance().logout();
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/de/hitec/nhplus/Login.fxml"));
         try {
             Parent root = loader.load();
