@@ -119,7 +119,6 @@ public class AllPatientController {
         this.tableView.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<Patient>() {
             @Override
             public void changed(ObservableValue<? extends Patient> observableValue, Patient oldPatient, Patient newPatient) {
-                ;
                 AllPatientController.this.buttonDelete.setDisable(newPatient == null);
             }
         });
