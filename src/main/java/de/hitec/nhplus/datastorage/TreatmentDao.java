@@ -2,6 +2,7 @@ package de.hitec.nhplus.datastorage;
 
 import de.hitec.nhplus.model.Treatment;
 import de.hitec.nhplus.utils.DateConverter;
+import de.hitec.nhplus.datastorage.ConnectionBuilder;
 
 import java.sql.*;
 import java.time.LocalDate;
@@ -92,8 +93,27 @@ public class TreatmentDao extends DaoImp<Treatment> {
     protected PreparedStatement getReadAllStatement() {
         PreparedStatement statement = null;
         try {
-            final String SQL = "SELECT * FROM treatment";
+            final String SQL = "SELECT * FROM treatment WHERE locked is not true";
             statement = this.connection.prepareStatement(SQL);
+
+            // Debug
+            ResultSet resultSet = statement.executeQuery();
+            while (resultSet.next()) {
+                System.out.println("Treatment ID: " + resultSet.getLong("tid"));
+                System.out.println("Patient ID: " + resultSet.getLong("pid"));
+                System.out.println("Treatment Date: " + resultSet.getString("treatment_date"));
+                System.out.println("Begin: " + resultSet.getString("begin"));
+                System.out.println("End: " + resultSet.getString("end"));
+                System.out.println("Description: " + resultSet.getString("description"));
+                System.out.println("Remark: " + resultSet.getString("remark"));
+                System.out.println("Locked: " + resultSet.getBoolean("locked"));
+                System.out.println("Lock Reason: " + resultSet.getString("lockedDate"));
+                System.out.println("-----------------------------");
+            }
+
+
+
+
         } catch (SQLException exception) {
             exception.printStackTrace();
         }
@@ -206,4 +226,24 @@ public class TreatmentDao extends DaoImp<Treatment> {
         }
         return preparedStatement;
     }
+
+
+
+    public void lockTreatment(long tid) throws SQLException {
+        int intValue = (int) tid; // Das gefällt mir nicht aber das bleibt erstmal so falls ich es nicht ändern kann
+        String sql = "UPDATE treatment SET locked = 1 WHERE tid = ?";
+        try (PreparedStatement pstmt = this.connection.prepareStatement(sql)) {
+            pstmt.setInt(1, intValue);
+            pstmt.executeUpdate();
+        }
+    }
+
+
+
+
+
+
+
+
+
 }

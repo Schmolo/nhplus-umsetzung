@@ -21,7 +21,18 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Optional;
 
+
 public class AllTreatmentController {
+
+
+    @FXML
+    private ListView<Treatment> treatmentListView;
+
+    @FXML
+    private Button lockButton;
+
+
+
 
     @FXML
     private TableView<Treatment> tableView;
@@ -53,6 +64,8 @@ public class AllTreatmentController {
     @FXML
     private Button buttonLock;
 
+
+
     private final ObservableList<Treatment> treatments = FXCollections.observableArrayList();
     private TreatmentDao dao;
     private final ObservableList<String> patientSelection = FXCollections.observableArrayList();
@@ -81,19 +94,16 @@ public class AllTreatmentController {
         this.tableView.getSelectionModel().selectedItemProperty().addListener(
                 (observableValue, oldTreatment, newTreatment) ->
                         AllTreatmentController.this.buttonLock.setDisable(newTreatment == null));
-
-
-
-
-
-
         this.createComboBoxData();
+
+
     }
 
     public void readAllAndShowInTableView() {
         this.treatments.clear();
         comboBoxPatientSelection.getSelectionModel().select(0);
         this.dao = DaoFactory.getDaoFactory().createTreatmentDao();
+
         try {
             this.treatments.addAll(dao.readAll());
         } catch (SQLException exception) {
@@ -190,10 +200,8 @@ public class AllTreatmentController {
             // DAO (Data Access Object) für die Behandlung erstellen
             TreatmentDao dao = DaoFactory.getDaoFactory().createTreatmentDao();
             try {
-                // Behandlung in der Datenbank anhand der ID löschen
-                dao.deleteById(t.getTid());
+                dao.lockTreatment(t.getTid());
             } catch (SQLException exception) {
-                // Ausnahme (Fehler) drucken, falls ein SQL-Fehler auftritt
                 exception.printStackTrace();
             }
         }
