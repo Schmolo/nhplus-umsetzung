@@ -20,7 +20,7 @@
         </TableView>
         <HBox layoutX="420.0" layoutY="450.0" spacing="10.0" AnchorPane.bottomAnchor="15.0" AnchorPane.leftAnchor="15.0" AnchorPane.rightAnchor="15.0">
             <children>
-                <Button fx:id="btnAdd" mnemonicParsing="false" prefWidth="90.0" text="Hinzufügen" />
+                <Button fx:id="btnAdd" onAction="#handleNewCaregiver" mnemonicParsing="false" prefWidth="90.0" text="Hinzufügen" />
                 <Button fx:id="btnDelete" onAction="#handleDelete" mnemonicParsing="false" prefWidth="90.0" text="Löschen" />
             </children>
         </HBox>

@@ -1,15 +1,22 @@
 package de.hitec.nhplus.controller;
 
+import de.hitec.nhplus.Main;
 import de.hitec.nhplus.datastorage.CaregiverDao;
 import de.hitec.nhplus.datastorage.DaoFactory;
 import de.hitec.nhplus.model.Caregiver;
+import de.hitec.nhplus.model.Patient;
 import de.hitec.nhplus.service.Session;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.layout.AnchorPane;
+import javafx.stage.Stage;
 
+import java.io.IOException;
 import java.sql.SQLException;
 
 public class AllCaregiverController {
@@ -45,7 +52,7 @@ public class AllCaregiverController {
         this.tableView.setItems(this.caregivers);
     }
 
-    private void readAllAndShowInTableView() {
+    public void readAllAndShowInTableView() {
         this.caregivers.clear();
         CaregiverDao dao = DaoFactory.getDaoFactory().createCaregiverDAO();
         try {
@@ -82,6 +89,31 @@ public class AllCaregiverController {
             dao.deleteById(selectedCaregiver.getPid());
             this.caregivers.remove(selectedCaregiver);
         } catch (SQLException exception) {
+            exception.printStackTrace();
+        }
+    }
+
+    @FXML
+    public void handleNewCaregiver() {
+        newCaregiverWindow();
+    }
+
+    public void newCaregiverWindow() {
+        try {
+            FXMLLoader loader = new FXMLLoader(Main.class.getResource("/de/hitec/nhplus/NewCaregiverView.fxml"));
+            AnchorPane pane = loader.load();
+            Scene scene = new Scene(pane);
+
+            // the primary stage should stay in the background
+            Stage stage = new Stage();
+
+            NewCaregiverController controller = loader.getController();
+            controller.initialize(this, stage);
+
+            stage.setScene(scene);
+            stage.setResizable(false);
+            stage.showAndWait();
+        } catch (IOException exception) {
             exception.printStackTrace();
         }
     }
