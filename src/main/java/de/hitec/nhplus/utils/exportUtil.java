@@ -17,8 +17,8 @@ public class exportUtil {
             String[] header = { "ID", "First Name", "Surname", "Date of Birth", "Care Level", "Room Number" };
 
             // Write the header to the CSV file
-            for (int i = 0; i < header.length; i++) {
-                writer.write(header[i] + ", ");
+            for (String s : header) {
+                writer.write(s + "; ");
             }
             writer.newLine();
 
@@ -33,8 +33,8 @@ public class exportUtil {
                         patient.getRoomNumber()
                 };
 
-                for (int i = 0; i < data.length; i++) {
-                    writer.write(data[i] + ", ");
+                for (String datum : data) {
+                    writer.write(datum + "; ");
                 }
                 writer.newLine();
             }

@@ -5,8 +5,6 @@ module de.hitec.nhplus {
     requires org.controlsfx.controls;
     requires java.sql;
     requires org.xerial.sqlitejdbc;
-    requires com.opencsv;
-    requires itextpdf;
     requires java.desktop;
 
     opens de.hitec.nhplus to javafx.fxml;

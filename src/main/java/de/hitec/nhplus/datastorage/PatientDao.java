@@ -136,7 +136,7 @@ public class PatientDao extends DaoImp<Patient> {
                             "surname = ?, " +
                             "dateOfBirth = ?, " +
                             "carelevel = ?, " +
-                            "roomnumber = ?, " +
+                            "roomnumber = ? " +
                             "WHERE pid = ?";
             preparedStatement = this.connection.prepareStatement(SQL);
             preparedStatement.setString(1, patient.getFirstName());
@@ -144,7 +144,7 @@ public class PatientDao extends DaoImp<Patient> {
             preparedStatement.setString(3, patient.getDateOfBirth());
             preparedStatement.setString(4, patient.getCareLevel());
             preparedStatement.setString(5, patient.getRoomNumber());
-            preparedStatement.setLong(7, patient.getPid());
+            preparedStatement.setLong(6, patient.getPid());
         } catch (SQLException exception) {
             exception.printStackTrace();
         }
