@@ -2,20 +2,19 @@ package de.hitec.nhplus.controller;
 
 import de.hitec.nhplus.datastorage.DaoFactory;
 import de.hitec.nhplus.datastorage.PatientDao;
+import de.hitec.nhplus.model.Patient;
+import de.hitec.nhplus.utils.DateConverter;
+import de.hitec.nhplus.utils.exportUtil;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
-import javafx.scene.control.Button;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.cell.TextFieldTableCell;
-import de.hitec.nhplus.model.Patient;
-import de.hitec.nhplus.utils.DateConverter;
-
+import java.io.File;
+import java.io.IOException;
 import java.sql.SQLException;
 import java.time.LocalDate;
 
@@ -54,6 +53,12 @@ public class AllPatientController {
     private Button buttonAdd;
 
     @FXML
+    private Button buttonExport;
+
+    @FXML
+    private Button buttonSelectAll;
+
+    @FXML
     private TextField textFieldSurname;
 
     @FXML
@@ -67,7 +72,6 @@ public class AllPatientController {
 
     @FXML
     private TextField textFieldRoomNumber;
-
 
 
     private final ObservableList<Patient> patients = FXCollections.observableArrayList();
@@ -100,14 +104,21 @@ public class AllPatientController {
         this.columnRoomNumber.setCellValueFactory(new PropertyValueFactory<>("roomNumber"));
         this.columnRoomNumber.setCellFactory(TextFieldTableCell.forTableColumn());
 
+        Tooltip exportTooltip = new Tooltip("To export multiple users data please hold control and select the users then click on export.");
+        Tooltip.install(buttonExport, exportTooltip);
+
+        Tooltip selectAllTooltip = new Tooltip("Click to select all patients.");
+        Tooltip.install(buttonSelectAll, selectAllTooltip);
+
 
         //Anzeigen der Daten
+        this.tableView.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
         this.tableView.setItems(this.patients);
 
         this.buttonDelete.setDisable(true);
         this.tableView.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<Patient>() {
             @Override
-            public void changed(ObservableValue<? extends Patient> observableValue, Patient oldPatient, Patient newPatient) {;
+            public void changed(ObservableValue<? extends Patient> observableValue, Patient oldPatient, Patient newPatient) {
                 AllPatientController.this.buttonDelete.setDisable(newPatient == null);
             }
         });
@@ -172,11 +183,10 @@ public class AllPatientController {
      * @param event Event including the changed object and the change.
      */
     @FXML
-    public void handleOnEditRoomNumber(TableColumn.CellEditEvent<Patient, String> event){
+    public void handleOnEditRoomNumber(TableColumn.CellEditEvent<Patient, String> event) {
         event.getRowValue().setRoomNumber(event.getNewValue());
         this.doUpdate(event);
     }
-
 
 
     /**
@@ -247,6 +257,29 @@ public class AllPatientController {
     }
 
     /**
+     * This method handles the events fired by the button to export a patient's data. It retrieves the selected
+     * <code>Patient</code> from the <code>TableView</code>, and if a patient is selected, it calls the method
+     * to export the patient's data. The export format can is "CSV".
+     */
+    @FXML
+    public void handleExport() {
+        ObservableList<Patient> selectedPatients = this.tableView.getSelectionModel().getSelectedItems();
+        if (selectedPatients != null && !selectedPatients.isEmpty()) {
+            try {
+                exportPatientData(selectedPatients);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    @FXML
+    public void handleSelectAll() {
+        this.tableView.getSelectionModel().selectAll();
+    }
+
+
+    /**
      * Clears all contents from all <code>TextField</code>s.
      */
     private void clearTextfields() {
@@ -269,5 +302,10 @@ public class AllPatientController {
         return !this.textFieldFirstName.getText().isBlank() && !this.textFieldSurname.getText().isBlank() &&
                 !this.textFieldDateOfBirth.getText().isBlank() && !this.textFieldCareLevel.getText().isBlank() &&
                 !this.textFieldRoomNumber.getText().isBlank();
+    }
+
+
+    private void exportPatientData(ObservableList<Patient> selectedPatients) throws Exception {
+        exportUtil.exportToCSV(selectedPatients);
     }
 }
