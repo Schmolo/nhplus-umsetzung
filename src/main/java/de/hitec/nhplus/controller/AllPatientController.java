@@ -1,10 +1,10 @@
 package de.hitec.nhplus.controller;
 
-import javafx.scene.control.Tooltip;
 import de.hitec.nhplus.datastorage.DaoFactory;
 import de.hitec.nhplus.datastorage.PatientDao;
 import de.hitec.nhplus.model.Patient;
 import de.hitec.nhplus.utils.DateConverter;
+import de.hitec.nhplus.utils.exportUtil;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
@@ -13,9 +13,7 @@ import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.cell.TextFieldTableCell;
-import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.time.LocalDate;
@@ -76,7 +74,6 @@ public class AllPatientController {
     private TextField textFieldRoomNumber;
 
 
-
     private final ObservableList<Patient> patients = FXCollections.observableArrayList();
     private PatientDao dao;
 
@@ -121,7 +118,8 @@ public class AllPatientController {
         this.buttonDelete.setDisable(true);
         this.tableView.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<Patient>() {
             @Override
-            public void changed(ObservableValue<? extends Patient> observableValue, Patient oldPatient, Patient newPatient) {;
+            public void changed(ObservableValue<? extends Patient> observableValue, Patient oldPatient, Patient newPatient) {
+                ;
                 AllPatientController.this.buttonDelete.setDisable(newPatient == null);
             }
         });
@@ -186,11 +184,10 @@ public class AllPatientController {
      * @param event Event including the changed object and the change.
      */
     @FXML
-    public void handleOnEditRoomNumber(TableColumn.CellEditEvent<Patient, String> event){
+    public void handleOnEditRoomNumber(TableColumn.CellEditEvent<Patient, String> event) {
         event.getRowValue().setRoomNumber(event.getNewValue());
         this.doUpdate(event);
     }
-
 
 
     /**
@@ -309,49 +306,7 @@ public class AllPatientController {
     }
 
 
-    private void exportPatientData(ObservableList<Patient> patients) throws Exception {
-        if ("CSV".equals("CSV")) {
-            exportToCSV(patients);
-        }
-    }
-
-    private void exportToCSV(ObservableList<Patient> patients) throws IOException {
-        // Create a temporary file for CSV export
-        File tempFile = File.createTempFile("export", ".csv");
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter(tempFile))) {
-            String[] header = { "ID", "First Name", "Surname", "Date of Birth", "Care Level", "Room Number" };
-
-            // Write the header to the CSV file
-            for (int i = 0; i < header.length; i++) {
-                writer.write(header[i] + ", ");
-            }
-            writer.newLine();
-
-            // Write the data to the CSV file
-            for (Patient patient : patients) {
-                String[] data = {
-                        String.valueOf(patient.getPid()),
-                        patient.getFirstName(),
-                        patient.getSurname(),
-                        patient.getDateOfBirth().toString(),
-                        patient.getCareLevel(),
-                        patient.getRoomNumber()
-                };
-
-                for (int i = 0; i < data.length; i++) {
-                    writer.write(data[i] + ", ");
-                }
-                writer.newLine();
-            }
-        }
-        // Open the temporary file
-        openFile(tempFile);
-    }
-
-// Method to open a file using the default system application
-    private void openFile(File file) throws IOException {
-        if (java.awt.Desktop.isDesktopSupported()) {
-            java.awt.Desktop.getDesktop().open(file);
-        }
+    private void exportPatientData(ObservableList<Patient> selectedPatients) throws Exception {
+        exportUtil.exportToCSV(selectedPatients);
     }
 }
