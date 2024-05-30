@@ -16,15 +16,22 @@ public class CaregiverDao extends DaoImp<Caregiver>{
 
     @Override
     protected PreparedStatement getCreateStatement(Caregiver caregiver) {
+        final String SQL = "INSERT INTO caregiver (username, firstname, surname, dateOfBirth, telephoneNumber, password_hash, isAdmin) " +
+                "VALUES (?, ?, ?, ?, ?, ?, ?)";
+        return prepareStatement(SQL, caregiver);
+    }
+
+    private PreparedStatement prepareStatement(String sql, Caregiver caregiver) {
         PreparedStatement preparedStatement = null;
         try {
-            final String SQL = "INSERT INTO caregiver (firstname, surname, dateOfBirth, password_hash) " +
-                    "VALUES (?, ?, ?, ?)";
-            preparedStatement = this.connection.prepareStatement(SQL);
-            preparedStatement.setString(1, caregiver.getFirstName());
-            preparedStatement.setString(2, caregiver.getSurname());
-            preparedStatement.setString(3, caregiver.getDateOfBirth());
-            preparedStatement.setString(4, caregiver.getPassword_hash());
+            preparedStatement = this.connection.prepareStatement(sql);
+            preparedStatement.setString(1, caregiver.getUsername());
+            preparedStatement.setString(2, caregiver.getFirstName());
+            preparedStatement.setString(3, caregiver.getSurname());
+            preparedStatement.setString(4, caregiver.getDateOfBirth());
+            preparedStatement.setString(5, caregiver.getTelephoneNumber());
+            preparedStatement.setString(6, caregiver.getPassword_hash());
+            preparedStatement.setBoolean(7, caregiver.isAdmin());
         } catch (SQLException exception) {
             exception.printStackTrace();
         }
@@ -49,10 +56,13 @@ public class CaregiverDao extends DaoImp<Caregiver>{
     protected Caregiver getInstanceFromResultSet(ResultSet set) throws SQLException {
         return new Caregiver(
                 set.getLong("pid"),
+                set.getString("username"),
                 set.getString("firstname"),
                 set.getString("surname"),
                 DateConverter.convertStringToLocalDate(set.getString("dateOfBirth")),
-                set.getString("password_hash")
+                set.getString("telephoneNumber"),
+                set.getString("password_hash"),
+                set.getBoolean("isAdmin")
         );
     }
 
@@ -79,24 +89,16 @@ public class CaregiverDao extends DaoImp<Caregiver>{
 
     @Override
     protected PreparedStatement getUpdateStatement(Caregiver caregiver) {
-        PreparedStatement preparedStatement = null;
-        try {
-            final String SQL = "UPDATE caregiver SET " +
-                    "firstname = ?, " +
-                    "surname = ?, " +
-                    "dateOfBirth = ?, " +
-                    "password_hash = ? " +
-                    "WHERE pid = ?";
-            preparedStatement = this.connection.prepareStatement(SQL);
-            preparedStatement.setString(1, caregiver.getFirstName());
-            preparedStatement.setString(2, caregiver.getSurname());
-            preparedStatement.setString(3, caregiver.getDateOfBirth());
-            preparedStatement.setString(4, caregiver.getPassword_hash());
-            preparedStatement.setLong(5, caregiver.getPid());
-        } catch (SQLException exception) {
-            exception.printStackTrace();
-        }
-        return preparedStatement;
+        final String SQL = "UPDATE caregiver SET " +
+                "username = ?, " +
+                "firstname = ?, " +
+                "surname = ?, " +
+                "dateOfBirth = ?, " +
+                "telephoneNumber = ?, " +
+                "password_hash = ?, " +
+                "isAdmin = ? " +
+                "WHERE pid = ?";
+        return prepareStatement(SQL, caregiver);
     }
 
     @Override

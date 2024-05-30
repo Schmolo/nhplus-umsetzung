@@ -13,16 +13,15 @@ import java.sql.SQLException;
 
 public class CaregiverService {
 
-    public Caregiver authenticate(String firstname, String surname, String password) {
-        if (firstname == null || surname == null || password == null) {
+    public Caregiver authenticate(String username, String password) {
+        if (username == null || password == null) {
             return null;
         }
         Caregiver caregiver = null;
         try {
             Connection connection = ConnectionBuilder.getConnection();
-            PreparedStatement statement = connection.prepareStatement("SELECT * FROM caregiver WHERE firstname = ? AND surname = ?");
-            statement.setString(1, firstname);
-            statement.setString(2, surname);
+            PreparedStatement statement = connection.prepareStatement("SELECT * FROM caregiver WHERE username = ?");
+            statement.setString(1, username);
 
             ResultSet resultSet = statement.executeQuery();
 
@@ -32,10 +31,13 @@ public class CaregiverService {
             if (resultSet.next() && password_match) {
                 caregiver = new Caregiver(
                         resultSet.getLong("pid"),
+                        resultSet.getString("username"),
                         resultSet.getString("firstname"),
                         resultSet.getString("surname"),
                         DateConverter.convertStringToLocalDate(resultSet.getString("dateOfBirth")),
-                        password_hash
+                        resultSet.getString("telephoneNumber"),
+                        password_hash,
+                        resultSet.getBoolean("isAdmin")
                 );
             } else {
                 return null;

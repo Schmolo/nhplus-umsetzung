@@ -23,10 +23,7 @@ public class LoginController {
     private Label errorLabel;
 
     @FXML
-    private TextField firstnameField;
-
-    @FXML
-    private TextField surnameField;
+    private TextField usernameField;
 
     @FXML
     private PasswordField passwordField;
@@ -35,12 +32,11 @@ public class LoginController {
 
     @FXML
     private void login(ActionEvent event) {
-        String firstname = firstnameField.getText();
-        String surname = surnameField.getText();
+        String username = usernameField.getText();
         String password = passwordField.getText();
 
 
-        Caregiver caregiver = caregiverService.authenticate(firstname, surname, password);
+        Caregiver caregiver = caregiverService.authenticate(username, password);
         if (caregiver != null) {
             Session.getInstance().setLoggedInCaregiver(caregiver);
             FXMLLoader loader = new FXMLLoader(Main.class.getResource("/de/hitec/nhplus/MainWindowView.fxml"));

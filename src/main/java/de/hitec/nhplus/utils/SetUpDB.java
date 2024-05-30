@@ -86,9 +86,12 @@ public class SetUpDB {
     private static void setUpTableCaregiver(Connection connection) {
         final String SQL = "CREATE TABLE IF NOT EXISTS caregiver (" +
                 "   pid INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                "   username TEXT NOT NULL, " +
                 "   firstname TEXT NOT NULL, " +
                 "   surname TEXT NOT NULL, " +
                 "   dateOfBirth TEXT NOT NULL, " +
+                "   telephoneNumber TEXT NOT NULL, " +
+                "   isAdmin BOOLEAN NOT NULL, " +
                 "   password_hash TEXT NOT NULL " +
                 ");";
         try (Statement statement = connection.createStatement()) {
@@ -101,7 +104,8 @@ public class SetUpDB {
     private static void setUpCaregivers() {
         try {
             CaregiverDao dao = DaoFactory.getDaoFactory().createCaregiverDAO();
-            dao.create(new Caregiver("admin", "admin", convertStringToLocalDate("2000-01-01"), "admin"));
+            dao.create(new Caregiver("admin", "admin", "admin", convertStringToLocalDate("2000-01-01"), "0123-456-789", "admin", true));
+            dao.create(new Caregiver("notadmin","notadmin", "notadmin", convertStringToLocalDate("1970-01-01"), "0123-456-789", "notadmin", false));
         } catch (SQLException exception) {
             exception.printStackTrace();
         }
