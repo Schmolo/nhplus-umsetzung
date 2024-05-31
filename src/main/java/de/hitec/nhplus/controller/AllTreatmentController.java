@@ -28,16 +28,6 @@ import java.util.concurrent.ScheduledExecutorService;
 
 public class AllTreatmentController {
 
-
-    @FXML
-    private ListView<Treatment> treatmentListView;
-
-    @FXML
-    private Button lockButton;
-
-
-
-
     @FXML
     private TableView<Treatment> tableView;
 
@@ -63,12 +53,7 @@ public class AllTreatmentController {
     private ComboBox<String> comboBoxPatientSelection;
 
     @FXML
-    private Button buttonDelete;
-
-    @FXML
     private Button buttonLock;
-
-
 
     private final ObservableList<Treatment> treatments = FXCollections.observableArrayList();
     private TreatmentDao dao;
@@ -76,8 +61,6 @@ public class AllTreatmentController {
     private ArrayList<Patient> patientList;
 
     private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
-
-
 
     public void initialize() {
         readAllAndShowInTableView();
@@ -92,19 +75,11 @@ public class AllTreatmentController {
         this.columnDescription.setCellValueFactory(new PropertyValueFactory<>("description"));
         this.tableView.setItems(this.treatments);
 
-        // Disabling the button to delete treatments as long, as no treatment was selected.
-        this.buttonDelete.setDisable(true);
-        this.tableView.getSelectionModel().selectedItemProperty().addListener(
-                (observableValue, oldTreatment, newTreatment) ->
-                        AllTreatmentController.this.buttonDelete.setDisable(newTreatment == null));
-
         this.buttonLock.setDisable(true);
         this.tableView.getSelectionModel().selectedItemProperty().addListener(
                 (observableValue, oldTreatment, newTreatment) ->
                         AllTreatmentController.this.buttonLock.setDisable(newTreatment == null));
         this.createComboBoxData();
-
-
     }
 
     public void readAllAndShowInTableView() {
@@ -165,20 +140,6 @@ public class AllTreatmentController {
         }
         return null;
     }
-
-    @FXML
-    public void handleDelete() {
-        int index = this.tableView.getSelectionModel().getSelectedIndex();
-        Treatment t = this.treatments.remove(index);
-        TreatmentDao dao = DaoFactory.getDaoFactory().createTreatmentDao();
-        try {
-            dao.deleteById(t.getTid());
-        } catch (SQLException exception) {
-            exception.printStackTrace();
-        }
-    }
-
-
 
     /**
      * Diese Methode behandelt das Sperren einer Behandlung. Wenn eine Behandlung gesperrt ist, kann sie nicht mehr bearbeitet werden
