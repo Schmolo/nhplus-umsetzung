@@ -87,7 +87,7 @@ public class NewCaregiverController {
 
     private boolean areInputDataInvalid() {
         return this.textFieldFirstName.getText().isBlank() || this.textFieldSurname.getText().isBlank()
-                || this.datePickerDateOfBirth.getValue().toString().isBlank() || this.textFieldTelephoneNumber.getText().isBlank()
+                || this.datePickerDateOfBirth.getValue() == null || this.textFieldTelephoneNumber.getText().isBlank()
                 || this.textFieldUsername.getText().isBlank() || this.passwordFieldPassword.getText().isBlank();
     }
 }

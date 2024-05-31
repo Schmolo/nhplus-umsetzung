@@ -7,7 +7,7 @@
 
 <AnchorPane prefHeight="500.0" prefWidth="855.0" xmlns="http://javafx.com/javafx/10.0.2-internal" xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.hitec.nhplus.controller.AllCaregiverController">
     <children>
-        <TableView fx:id="tableView" layoutX="31.0" layoutY="40.0" AnchorPane.bottomAnchor="70.0" AnchorPane.leftAnchor="15.0" AnchorPane.rightAnchor="15.0" AnchorPane.topAnchor="80.0">
+        <TableView fx:id="tableView" editable="true" onMouseClicked="#handleMouseClick" layoutX="31.0" layoutY="40.0" AnchorPane.bottomAnchor="70.0" AnchorPane.leftAnchor="15.0" AnchorPane.rightAnchor="15.0" AnchorPane.topAnchor="80.0">
             <columns>
                 <TableColumn fx:id="colId" maxWidth="1200.0" minWidth="5.0" prefWidth="5.0" text="ID" />
                 <TableColumn fx:id="colSurname" maxWidth="7500.0" minWidth="20.0" prefWidth="100.0" text="Nachname" />

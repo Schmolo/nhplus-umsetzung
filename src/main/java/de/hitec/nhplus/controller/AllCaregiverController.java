@@ -4,7 +4,6 @@ import de.hitec.nhplus.Main;
 import de.hitec.nhplus.datastorage.CaregiverDao;
 import de.hitec.nhplus.datastorage.DaoFactory;
 import de.hitec.nhplus.model.Caregiver;
-import de.hitec.nhplus.model.Patient;
 import de.hitec.nhplus.service.Session;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -98,6 +97,16 @@ public class AllCaregiverController {
         newCaregiverWindow();
     }
 
+    @FXML
+    public void handleMouseClick() {
+        tableView.setOnMouseClicked(event -> {
+            Caregiver caregiver = tableView.getSelectionModel().getSelectedItem();
+            if (event.getClickCount() == 2 && (caregiver != null)) {
+                CaregiverWindow(caregiver);
+            }
+        });
+    }
+
     public void newCaregiverWindow() {
         try {
             FXMLLoader loader = new FXMLLoader(Main.class.getResource("/de/hitec/nhplus/NewCaregiverView.fxml"));
@@ -109,6 +118,26 @@ public class AllCaregiverController {
 
             NewCaregiverController controller = loader.getController();
             controller.initialize(this, stage);
+
+            stage.setScene(scene);
+            stage.setResizable(false);
+            stage.showAndWait();
+        } catch (IOException exception) {
+            exception.printStackTrace();
+        }
+    }
+
+    public void CaregiverWindow(Caregiver caregiver) {
+        try {
+            FXMLLoader loader = new FXMLLoader(Main.class.getResource("/de/hitec/nhplus/CaregiverView.fxml"));
+            AnchorPane pane = loader.load();
+            Scene scene = new Scene(pane);
+
+            // the primary stage should stay in the background
+            Stage stage = new Stage();
+
+            CaregiverController controller = loader.getController();
+            controller.initialize(this, stage, caregiver);
 
             stage.setScene(scene);
             stage.setResizable(false);

@@ -128,6 +128,10 @@ public class Caregiver extends Person {
                 "firstName: " + getFirstName() + "\n" +
                 "surname: " + getSurname() + "\n" +
                 "dateOfBirth: " + dateOfBirth.get() + "\n" +
+                "telephoneNumber: " + telephoneNumber.get() + "\n" +
+                "username: " + username.get() + "\n" +
+                "isAdmin: " + isAdmin.get() + "\n" +
+                "password_hash: " + password_hash.get() +
                 "\n";
     }
 }
