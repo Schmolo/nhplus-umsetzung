@@ -21,6 +21,10 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Optional;
 
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+
+
 
 public class AllTreatmentController {
 
@@ -70,6 +74,10 @@ public class AllTreatmentController {
     private TreatmentDao dao;
     private final ObservableList<String> patientSelection = FXCollections.observableArrayList();
     private ArrayList<Patient> patientList;
+
+    private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
+
+
 
     public void initialize() {
         readAllAndShowInTableView();
@@ -171,6 +179,14 @@ public class AllTreatmentController {
     }
 
 
+
+    /**
+     * Diese Methode behandelt das Sperren einer Behandlung. Wenn eine Behandlung gesperrt ist, kann sie nicht mehr bearbeitet werden
+     * und wird nach 10 Jahren gelöscht. Diese Aktion ist unwiderruflich.
+     * Die Methode erstellt zunächst einen Bestätigungsdialog, um sicherzustellen, dass der Benutzer die Behandlung wirklich sperren möchte.
+     * Wenn der Benutzer bestätigt, wird die ausgewählte Behandlung aus der Liste entfernt und die 'lockTreatment'-Methode
+     * des TreatmentDao wird mit der Behandlungs-ID als Parameter aufgerufen.
+     */
     public void handleLock() {
         // Erstellen eines Bestätigungs-Dialogs
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
@@ -207,10 +223,6 @@ public class AllTreatmentController {
         }
         // Wenn "Abbrechen" gewählt wurde, passiert nichts und die Methode endet
     }
-
-
-
-
 
 
     @FXML

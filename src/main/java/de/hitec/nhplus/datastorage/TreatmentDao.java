@@ -2,11 +2,12 @@ package de.hitec.nhplus.datastorage;
 
 import de.hitec.nhplus.model.Treatment;
 import de.hitec.nhplus.utils.DateConverter;
-import de.hitec.nhplus.datastorage.ConnectionBuilder;
 
 import java.sql.*;
+import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -97,7 +98,8 @@ public class TreatmentDao extends DaoImp<Treatment> {
             statement = this.connection.prepareStatement(SQL);
 
             // Debug
-            ResultSet resultSet = statement.executeQuery();
+
+            /* ResultSet resultSet = statement.executeQuery();
             while (resultSet.next()) {
                 System.out.println("Treatment ID: " + resultSet.getLong("tid"));
                 System.out.println("Patient ID: " + resultSet.getLong("pid"));
@@ -110,9 +112,7 @@ public class TreatmentDao extends DaoImp<Treatment> {
                 System.out.println("Lock Reason: " + resultSet.getString("lockedDate"));
                 System.out.println("-----------------------------");
             }
-
-
-
+            */
 
         } catch (SQLException exception) {
             exception.printStackTrace();
@@ -231,19 +231,56 @@ public class TreatmentDao extends DaoImp<Treatment> {
 
     public void lockTreatment(long tid) throws SQLException {
         int intValue = (int) tid; // Das gefällt mir nicht aber das bleibt erstmal so falls ich es nicht ändern kann
-        String sql = "UPDATE treatment SET locked = 1 WHERE tid = ?";
+        LocalDate lockDate = LocalDate.now().plusYears(10);
+        String sql = "UPDATE treatment SET locked = 1, lockedDate = ? WHERE tid = ?";
         try (PreparedStatement pstmt = this.connection.prepareStatement(sql)) {
-            pstmt.setInt(1, intValue);
+            pstmt.setDate(1, Date.valueOf(lockDate));
+            pstmt.setLong(2, tid);
             pstmt.executeUpdate();
         }
+
     }
 
 
 
+    /**
+     * Diese Methode löscht alle Behandlungen, deren Sperrdatum abgelaufen ist.
+     * Sie durchläuft alle gesperrten Behandlungen in der Datenbank und prüft, ob das aktuelle Datum nach dem Sperrdatum liegt.
+     * Wenn dies der Fall ist, wird die Behandlung gelöscht.
+     *
+     * @throws SQLException wenn ein Datenbankfehler auftritt
+     */
+    public void deleteExpiredLocks() throws SQLException {
+        // Debug
+        // System.out.println("deleteExpiredLocks");
 
+        // Das aktuelle Datum abrufen
+        LocalDate currentDate = LocalDate.now();
 
+        // SQL-Abfrage erstellen, um alle gesperrten Behandlungen abzurufen
+        String sql = "SELECT * FROM treatment WHERE locked = 1";
 
+        // Try-with-resources-Anweisung, um sicherzustellen, dass die Ressourcen ordnungsgemäß freigegeben werden
+        try (PreparedStatement pstmt = this.connection.prepareStatement(sql)) {
+            // Die Abfrage ausführen und das Ergebnis abrufen
+            ResultSet resultSet = pstmt.executeQuery();
 
+            while (resultSet.next()) {
+                // Das Sperrdatum als Long-Wert (Millisekunden seit der Unix-Epoche) abrufen
+                long lockedDateMillis = resultSet.getLong("lockedDate");
 
+                // Den Long-Wert in ein LocalDate-Objekt umwandeln
+                LocalDate lockedDate = Instant.ofEpochMilli(lockedDateMillis).atZone(ZoneId.systemDefault()).toLocalDate();
 
+                // Überprüfen, ob das aktuelle Datum nach dem Sperrdatum liegt
+                if (currentDate.isAfter(lockedDate)) {
+                    // Die Behandlungs-ID abrufen
+                    long tid = resultSet.getLong("tid");
+
+                    // Die Behandlung löschen
+                    deleteById(tid);
+                }
+            }
+        }
+    }
 }
