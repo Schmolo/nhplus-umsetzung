@@ -21,7 +21,7 @@ public class NewCaregiverController {
     private TextField textFieldSurname;
 
     @FXML
-    private TextField textFieldDateOfBirth;
+    private DatePicker datePickerDateOfBirth;
 
     @FXML
     private TextField textFieldTelephoneNumber;
@@ -50,7 +50,7 @@ public class NewCaregiverController {
                 NewCaregiverController.this.buttonAdd.setDisable(NewCaregiverController.this.areInputDataInvalid());
         this.textFieldFirstName.textProperty().addListener(inputNewCaregiverListener);
         this.textFieldSurname.textProperty().addListener(inputNewCaregiverListener);
-        this.textFieldDateOfBirth.textProperty().addListener(inputNewCaregiverListener);
+        this.datePickerDateOfBirth.valueProperty().addListener((observableValue, localDate, t1) -> NewCaregiverController.this.buttonAdd.setDisable(NewCaregiverController.this.areInputDataInvalid()));
         this.textFieldTelephoneNumber.textProperty().addListener(inputNewCaregiverListener);
         this.textFieldUsername.textProperty().addListener(inputNewCaregiverListener);
         this.passwordFieldPassword.textProperty().addListener(inputNewCaregiverListener);
@@ -61,7 +61,7 @@ public class NewCaregiverController {
         String username = textFieldUsername.getText();
         String firstName = textFieldFirstName.getText();
         String surname = textFieldSurname.getText();
-        LocalDate dateOfBirth = DateConverter.convertStringToLocalDate(textFieldDateOfBirth.getText());
+        LocalDate dateOfBirth = datePickerDateOfBirth.getValue();
         String telephoneNumber = textFieldTelephoneNumber.getText();
         String password = passwordFieldPassword.getText();
         boolean isAdmin = checkBoxIsAdmin.isSelected();
@@ -87,7 +87,7 @@ public class NewCaregiverController {
 
     private boolean areInputDataInvalid() {
         return this.textFieldFirstName.getText().isBlank() || this.textFieldSurname.getText().isBlank()
-                || this.textFieldDateOfBirth.getText().isBlank() || this.textFieldTelephoneNumber.getText().isBlank()
+                || this.datePickerDateOfBirth.getValue().toString().isBlank() || this.textFieldTelephoneNumber.getText().isBlank()
                 || this.textFieldUsername.getText().isBlank() || this.passwordFieldPassword.getText().isBlank();
     }
 }
