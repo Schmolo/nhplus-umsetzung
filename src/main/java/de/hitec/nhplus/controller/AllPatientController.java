@@ -50,6 +50,9 @@ public class AllPatientController {
     private Button buttonDelete;
 
     @FXML
+    private Button buttonLock;
+
+    @FXML
     private Button buttonAdd;
 
     @FXML
@@ -122,6 +125,7 @@ public class AllPatientController {
                 AllPatientController.this.buttonDelete.setDisable(newPatient == null);
             }
         });
+
 
         this.buttonAdd.setDisable(true);
         ChangeListener<String> inputNewPatientListener = (observableValue, oldText, newText) ->

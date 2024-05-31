@@ -13,6 +13,22 @@ public class Treatment {
     private LocalTime end;
     private String description;
     private String remarks;
+    private Boolean locked;
+    private String lockedDate;
+
+
+
+
+    private boolean isLocked;
+
+    public boolean isLocked() {
+        return isLocked;
+    }
+
+    public void setLocked(boolean locked) {
+        isLocked = locked;
+    }
+
 
     /**
      * Constructor to initiate an object of class <code>Treatment</code> with the given parameter. Use this constructor
@@ -24,15 +40,19 @@ public class Treatment {
      * @param end Time of the end of the treatment in format "hh:MM".
      * @param description Description of the treatment.
      * @param remarks Remarks to the treatment.
+     * @param locked Boolean to indicate if the treatment is locked.
+     * @param lockedDate Date till the deletion.
      */
     public Treatment(long pid, LocalDate date, LocalTime begin,
-                     LocalTime end, String description, String remarks) {
+                     LocalTime end, String description, String remarks, Boolean locked, String lockedDate) {
         this.pid = pid;
         this.date = date;
         this.begin = begin;
         this.end = end;
         this.description = description;
         this.remarks = remarks;
+        this.locked = locked;
+        this.lockedDate = lockedDate;
     }
 
     /**
@@ -46,9 +66,11 @@ public class Treatment {
      * @param end Time of the end of the treatment in format "hh:MM".
      * @param description Description of the treatment.
      * @param remarks Remarks to the treatment.
+     * @param locked Boolean to indicate if the treatment is locked.
+     * @param lockedDate Date till the deletion.
      */
     public Treatment(long tid, long pid, LocalDate date, LocalTime begin,
-                     LocalTime end, String description, String remarks) {
+                     LocalTime end, String description, String remarks, Boolean locked, String lockedDate) {
         this.tid = tid;
         this.pid = pid;
         this.date = date;
@@ -56,6 +78,8 @@ public class Treatment {
         this.end = end;
         this.description = description;
         this.remarks = remarks;
+        this.locked = locked;
+        this.lockedDate = lockedDate;
     }
 
     public long getTid() {
@@ -106,6 +130,17 @@ public class Treatment {
         this.remarks = remarks;
     }
 
+    public Boolean getLocked() {return locked;}
+
+    public void setLocked(Boolean locked) {
+        this.locked = locked;
+    }
+
+    public String getLockedDate() {return lockedDate;}
+
+    public void setLockedDate(String lockedDate) {this.lockedDate = lockedDate;}
+
+
     public String toString() {
         return "\nBehandlung" + "\nTID: " + this.tid +
                 "\nPID: " + this.pid +
@@ -113,6 +148,9 @@ public class Treatment {
                 "\nBegin: " + this.begin +
                 "\nEnd: " + this.end +
                 "\nDescription: " + this.description +
-                "\nRemarks: " + this.remarks + "\n";
+                "\nRemarks: " + this.remarks +
+                "\nLocked" + this.locked +
+                "\nlockedDate" + this.lockedDate + "\n";
+
     }
 }

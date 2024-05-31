@@ -84,7 +84,9 @@ public class NewTreatmentController {
         LocalTime end = DateConverter.convertStringToLocalTime(textFieldEnd.getText());
         String description = textFieldDescription.getText();
         String remarks = textAreaRemarks.getText();
-        Treatment treatment = new Treatment(patient.getPid(), date, begin, end, description, remarks);
+        Boolean locked = false;
+        String lockedDate = null;
+        Treatment treatment = new Treatment(patient.getPid(), date, begin, end, description, remarks, locked, lockedDate);
         createTreatment(treatment);
         controller.readAllAndShowInTableView();
         stage.close();

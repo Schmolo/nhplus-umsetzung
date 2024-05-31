@@ -19,6 +19,12 @@ import de.hitec.nhplus.model.Treatment;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Optional;
+
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+
+
 
 public class AllTreatmentController {
 
@@ -47,12 +53,14 @@ public class AllTreatmentController {
     private ComboBox<String> comboBoxPatientSelection;
 
     @FXML
-    private Button buttonDelete;
+    private Button buttonLock;
 
     private final ObservableList<Treatment> treatments = FXCollections.observableArrayList();
     private TreatmentDao dao;
     private final ObservableList<String> patientSelection = FXCollections.observableArrayList();
     private ArrayList<Patient> patientList;
+
+    private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
 
     public void initialize() {
         readAllAndShowInTableView();
@@ -67,12 +75,10 @@ public class AllTreatmentController {
         this.columnDescription.setCellValueFactory(new PropertyValueFactory<>("description"));
         this.tableView.setItems(this.treatments);
 
-        // Disabling the button to delete treatments as long, as no treatment was selected.
-        this.buttonDelete.setDisable(true);
+        this.buttonLock.setDisable(true);
         this.tableView.getSelectionModel().selectedItemProperty().addListener(
                 (observableValue, oldTreatment, newTreatment) ->
-                        AllTreatmentController.this.buttonDelete.setDisable(newTreatment == null));
-
+                        AllTreatmentController.this.buttonLock.setDisable(newTreatment == null));
         this.createComboBoxData();
     }
 
@@ -80,6 +86,7 @@ public class AllTreatmentController {
         this.treatments.clear();
         comboBoxPatientSelection.getSelectionModel().select(0);
         this.dao = DaoFactory.getDaoFactory().createTreatmentDao();
+
         try {
             this.treatments.addAll(dao.readAll());
         } catch (SQLException exception) {
@@ -134,17 +141,50 @@ public class AllTreatmentController {
         return null;
     }
 
-    @FXML
-    public void handleDelete() {
-        int index = this.tableView.getSelectionModel().getSelectedIndex();
-        Treatment t = this.treatments.remove(index);
-        TreatmentDao dao = DaoFactory.getDaoFactory().createTreatmentDao();
-        try {
-            dao.deleteById(t.getTid());
-        } catch (SQLException exception) {
-            exception.printStackTrace();
+    /**
+     * Diese Methode behandelt das Sperren einer Behandlung. Wenn eine Behandlung gesperrt ist, kann sie nicht mehr bearbeitet werden
+     * und wird nach 10 Jahren gelöscht. Diese Aktion ist unwiderruflich.
+     * Die Methode erstellt zunächst einen Bestätigungsdialog, um sicherzustellen, dass der Benutzer die Behandlung wirklich sperren möchte.
+     * Wenn der Benutzer bestätigt, wird die ausgewählte Behandlung aus der Liste entfernt und die 'lockTreatment'-Methode
+     * des TreatmentDao wird mit der Behandlungs-ID als Parameter aufgerufen.
+     */
+    public void handleLock() {
+        // Erstellen eines Bestätigungs-Dialogs
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setTitle("Behandlung sperren");
+        alert.setHeaderText("Möchten Sie diese Behandlung wirklich sperren?");
+        alert.setContentText("Eine gesperrte Behandlung kann nicht mehr bearbeitet werden\n" +
+                "und wird innerhalb von 10 Jahren gelöscht,\n" +
+                "dies ist endgültig!");
+
+        // Erstellen von zwei Schaltflächen: Sperren und Abbrechen
+        ButtonType buttonTypeLock = new ButtonType("Sperren", ButtonBar.ButtonData.OK_DONE);
+        ButtonType buttonTypeCancel = new ButtonType("Abbrechen", ButtonBar.ButtonData.CANCEL_CLOSE);
+
+        // Hinzufügen der Schaltflächen zum Dialog
+        alert.getButtonTypes().setAll(buttonTypeLock, buttonTypeCancel);
+
+        // Anzeigen des Dialogs und Warten auf die Auswahl des Benutzers
+        Optional<ButtonType> result = alert.showAndWait();
+
+        // Überprüfen, ob die "Sperren"-Schaltfläche ausgewählt wurde
+        if (result.isPresent() && result.get() == buttonTypeLock) {
+            // Den Index der ausgewählten Behandlung in der Tabelle ermitteln
+            int index = this.tableView.getSelectionModel().getSelectedIndex();
+            // Die ausgewählte Behandlung aus der Liste entfernen
+            Treatment t = this.treatments.remove(index);
+
+            // DAO (Data Access Object) für die Behandlung erstellen
+            TreatmentDao dao = DaoFactory.getDaoFactory().createTreatmentDao();
+            try {
+                dao.lockTreatment(t.getTid());
+            } catch (SQLException exception) {
+                exception.printStackTrace();
+            }
         }
+        // Wenn "Abbrechen" gewählt wurde, passiert nichts und die Methode endet
     }
+
 
     @FXML
     public void handleNewTreatment() {
