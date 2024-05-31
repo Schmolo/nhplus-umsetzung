@@ -2,6 +2,8 @@ package de.hitec.nhplus.model;
 
 import de.hitec.nhplus.utils.DateConverter;
 import de.hitec.nhplus.utils.PasswordUtil;
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleLongProperty;
 import javafx.beans.property.SimpleStringProperty;
 
@@ -9,7 +11,10 @@ import java.time.LocalDate;
 
 public class Caregiver extends Person {
     private SimpleLongProperty pid;
+    private final SimpleStringProperty username;
+    private final SimpleStringProperty telephoneNumber;
     private final SimpleStringProperty dateOfBirth;
+    private final BooleanProperty isAdmin;
     private final SimpleStringProperty password_hash;
 
     /**
@@ -20,10 +25,13 @@ public class Caregiver extends Person {
      * @param dateOfBirth The date of birth of the Caregiver. It is a LocalDate object.
      * @param password The password for the Caregiver. This is not the actual password, but a string that will be hashed to create the password.
      */
-    public Caregiver(String firstName, String surname, LocalDate dateOfBirth, String password) {
+    public Caregiver(String username, String firstName, String surname, LocalDate dateOfBirth, String telephoneNumber, String password, boolean isAdmin) {
         super(firstName, surname);
+        this.username = new SimpleStringProperty(username);
         this.dateOfBirth = new SimpleStringProperty(DateConverter.convertLocalDateToString(dateOfBirth));
+        this.telephoneNumber = new SimpleStringProperty(telephoneNumber);
         this.password_hash = new SimpleStringProperty(PasswordUtil.generatePassword(password));
+        this.isAdmin = new SimpleBooleanProperty(isAdmin);
     }
 
     /**
@@ -35,11 +43,14 @@ public class Caregiver extends Person {
      * @param dateOfBirth The date of birth of the Caregiver. It is a LocalDate object.
      * @param password_hash The password hash for the Caregiver.
      */
-    public Caregiver(long pid, String firstName, String surname, LocalDate dateOfBirth, String password_hash) {
+    public Caregiver(long pid, String username, String firstName, String surname, LocalDate dateOfBirth, String telephoneNumber, String password_hash, boolean isAdmin) {
         super(firstName, surname);
         this.pid = new SimpleLongProperty(pid);
+        this.username = new SimpleStringProperty(username);
         this.dateOfBirth = new SimpleStringProperty(DateConverter.convertLocalDateToString(dateOfBirth));
+        this.telephoneNumber = new SimpleStringProperty(telephoneNumber);
         this.password_hash = new SimpleStringProperty(password_hash);
+        this.isAdmin = new SimpleBooleanProperty(isAdmin);
     }
 
     public long getPid() {
@@ -74,6 +85,42 @@ public class Caregiver extends Person {
         this.password_hash.set(password_hash);
     }
 
+    public String getTelephoneNumber() {
+        return telephoneNumber.get();
+    }
+
+    public SimpleStringProperty telephoneNumberProperty() {
+        return telephoneNumber;
+    }
+
+    public void setTelephoneNumber(String telephoneNumber) {
+        this.telephoneNumber.set(telephoneNumber);
+    }
+
+    public boolean isAdmin() {
+        return isAdmin.get();
+    }
+
+    public BooleanProperty isAdminProperty() {
+        return isAdmin;
+    }
+
+    public void setIsAdmin(boolean isAdmin) {
+        this.isAdmin.set(isAdmin);
+    }
+
+    public String getUsername() {
+        return username.get();
+    }
+
+    public SimpleStringProperty usernameProperty() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username.set(username);
+    }
+
     @Override
     public String toString() {
         return "Caregiver\n" +
@@ -81,6 +128,10 @@ public class Caregiver extends Person {
                 "firstName: " + getFirstName() + "\n" +
                 "surname: " + getSurname() + "\n" +
                 "dateOfBirth: " + dateOfBirth.get() + "\n" +
+                "telephoneNumber: " + telephoneNumber.get() + "\n" +
+                "username: " + username.get() + "\n" +
+                "isAdmin: " + isAdmin.get() + "\n" +
+                "password_hash: " + password_hash.get() +
                 "\n";
     }
 }
