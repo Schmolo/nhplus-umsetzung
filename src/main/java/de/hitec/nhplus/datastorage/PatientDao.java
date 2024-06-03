@@ -91,7 +91,7 @@ public class PatientDao extends DaoImp<Patient> {
     protected PreparedStatement getReadAllStatement() {
         PreparedStatement statement = null;
         try {
-            final String SQL = "SELECT * FROM patient";
+            final String SQL = "SELECT * FROM patient WHERE locked is not true";
             statement = this.connection.prepareStatement(SQL);
         } catch (SQLException exception) {
             exception.printStackTrace();
@@ -168,5 +168,24 @@ public class PatientDao extends DaoImp<Patient> {
             exception.printStackTrace();
         }
         return preparedStatement;
+    }
+
+
+    public void lockPatient(long pid) throws SQLException {
+        LocalDate lockDate = LocalDate.now().plusYears(10);
+        String sql = "UPDATE patient SET locked = 1, lockedDate = ? WHERE pid = ?";
+        try (PreparedStatement pstmt = this.connection.prepareStatement(sql)) {
+            pstmt.setDate(1, Date.valueOf(lockDate));
+            pstmt.setLong(2, pid);
+            pstmt.executeUpdate();
+        }
+    }
+
+    public void deleteExpiredPatientLocks() throws SQLException {
+        String sql = "DELETE FROM patient WHERE lockedDate < ?";
+        try (PreparedStatement pstmt = this.connection.prepareStatement(sql)) {
+            pstmt.setDate(1, Date.valueOf(LocalDate.now()));
+            pstmt.executeUpdate();
+        }
     }
 }
