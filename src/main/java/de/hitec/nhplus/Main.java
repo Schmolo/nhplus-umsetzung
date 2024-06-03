@@ -1,6 +1,7 @@
 package de.hitec.nhplus;
 
 import de.hitec.nhplus.datastorage.ConnectionBuilder;
+import de.hitec.nhplus.datastorage.PatientDao;
 import de.hitec.nhplus.datastorage.TreatmentDao;
 
 import javafx.application.Application;
@@ -58,13 +59,18 @@ public class Main extends Application {
      */
     private void scheduleTask() {
         // Erstellen einer Instanz von TreatmentDao
-        TreatmentDao dao = new TreatmentDao(ConnectionBuilder.getConnection());
+        TreatmentDao treatmentDao = new TreatmentDao(ConnectionBuilder.getConnection());
+        PatientDao patientDao = new PatientDao(ConnectionBuilder.getConnection());
+
+
 
         // Definieren der Aufgabe, die ausgeführt werden soll
         Runnable task = () -> {
             try {
                 // Aufrufen der Methode deleteExpiredLocks()
-                dao.deleteExpiredLocks();
+                treatmentDao.deleteExpiredLocks();
+                patientDao.deleteExpiredPatientLocks();
+
             } catch (SQLException e) {
                 // Fehlerbehandlung
                 e.printStackTrace();

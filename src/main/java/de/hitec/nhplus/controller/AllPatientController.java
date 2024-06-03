@@ -2,7 +2,9 @@ package de.hitec.nhplus.controller;
 
 import de.hitec.nhplus.datastorage.DaoFactory;
 import de.hitec.nhplus.datastorage.PatientDao;
+import de.hitec.nhplus.datastorage.TreatmentDao;
 import de.hitec.nhplus.model.Patient;
+import de.hitec.nhplus.model.Treatment;
 import de.hitec.nhplus.utils.DateConverter;
 import de.hitec.nhplus.utils.exportUtil;
 import javafx.beans.value.ChangeListener;
@@ -17,6 +19,7 @@ import java.io.File;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.time.LocalDate;
+import java.util.Optional;
 
 
 /**
@@ -226,16 +229,41 @@ public class AllPatientController {
      * <code>TableView</code>.
      */
     @FXML
-    public void handleDelete() {
-        Patient selectedItem = this.tableView.getSelectionModel().getSelectedItem();
-        if (selectedItem != null) {
+    public void handleLock() {
+        // Erstellen eines Bestätigungs-Dialogs
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setTitle("Patient sperren");
+        alert.setHeaderText("Möchten Sie diesen Patienten wirklich sperren?");
+        alert.setContentText("Ein gesperrter Patient kann nicht mehr bearbeitet werden\n" +
+                "und wird innerhalb von 10 Jahren gelöscht,\n" +
+                "dies ist endgültig!");
+
+        // Erstellen von zwei Schaltflächen: Sperren und Abbrechen
+        ButtonType buttonTypeLock = new ButtonType("Sperren", ButtonBar.ButtonData.OK_DONE);
+        ButtonType buttonTypeCancel = new ButtonType("Abbrechen", ButtonBar.ButtonData.CANCEL_CLOSE);
+
+        // Hinzufügen der Schaltflächen zum Dialog
+        alert.getButtonTypes().setAll(buttonTypeLock, buttonTypeCancel);
+
+        // Anzeigen des Dialogs und Warten auf die Auswahl des Benutzers
+        Optional<ButtonType> result = alert.showAndWait();
+
+        // Überprüfen, ob die "Sperren"-Schaltfläche ausgewählt wurde
+        if (result.isPresent() && result.get() == buttonTypeLock) {
+            // Den Index des ausgewählten Patienten in der Tabelle ermitteln
+            int index = this.tableView.getSelectionModel().getSelectedIndex();
+            // Den ausgewählten Patienten aus der Liste entfernen
+            Patient p = this.patients.remove(index);
+
+            // DAO (Data Access Object) für den Patienten erstellen
+            PatientDao dao = DaoFactory.getDaoFactory().createPatientDAO();
             try {
-                DaoFactory.getDaoFactory().createPatientDAO().deleteById(selectedItem.getPid());
-                this.tableView.getItems().remove(selectedItem);
+                dao.lockPatient(p.getPid());
             } catch (SQLException exception) {
                 exception.printStackTrace();
             }
         }
+        // Wenn "Abbrechen" gewählt wurde, passiert nichts und die Methode endet
     }
 
     /**
@@ -251,8 +279,10 @@ public class AllPatientController {
         LocalDate date = DateConverter.convertStringToLocalDate(birthday);
         String careLevel = this.textFieldCareLevel.getText();
         String roomNumber = this.textFieldRoomNumber.getText();
+        Boolean locked = false;
+        String lockedDate = null;
         try {
-            this.dao.create(new Patient(firstName, surname, date, careLevel, roomNumber));
+            this.dao.create(new Patient(firstName, surname, date, careLevel, roomNumber, locked, lockedDate));
         } catch (SQLException exception) {
             exception.printStackTrace();
         }
