@@ -251,8 +251,10 @@ public class AllPatientController {
         LocalDate date = DateConverter.convertStringToLocalDate(birthday);
         String careLevel = this.textFieldCareLevel.getText();
         String roomNumber = this.textFieldRoomNumber.getText();
+        Boolean locked = false;
+        String lockedDate = null;
         try {
-            this.dao.create(new Patient(firstName, surname, date, careLevel, roomNumber));
+            this.dao.create(new Patient(firstName, surname, date, careLevel, roomNumber, locked, lockedDate));
         } catch (SQLException exception) {
             exception.printStackTrace();
         }
