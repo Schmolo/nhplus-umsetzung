@@ -78,7 +78,7 @@ public class Main extends Application {
         };
 
         // Planen der Aufgabe zur sofortigen Ausführung und danach alle 24 Stunden
-        scheduler.scheduleAtFixedRate(task, 0, 24, TimeUnit.SECONDS);
+        scheduler.scheduleAtFixedRate(task, 0, 24, TimeUnit.HOURS);
     }
 
     public static void main(String[] args) {launch(args);}
