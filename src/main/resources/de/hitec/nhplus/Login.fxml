@@ -2,12 +2,17 @@
 
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
 
 <BorderPane fx:id="mainBorderPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="688.0" prefWidth="926.0" xmlns="http://javafx.com/javafx/10.0.2-internal" xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.hitec.nhplus.controller.LoginController">
     <center>
-        <VBox id="vBox" alignment="CENTER" spacing="20.0" styleClass="vBox" stylesheets="@Application.css">
+        <VBox id="vBox" alignment="CENTER" spacing="10.0" styleClass="vBox" stylesheets="@Application.css">
+            <Label text="NHPlus Login" textFill="white" alignment="CENTER" BorderPane.alignment="CENTER">
+                <font>
+                    <Font size="36.0" />
+                </font>
+            </Label>
             <Label fx:id="errorLabel" textFill="RED"/>
-            <Label text="Login" textFill="white"/>
             <TextField fx:id="usernameField" alignment="CENTER" maxWidth="300" promptText="Username"/>
             <PasswordField fx:id="passwordField" alignment="CENTER" maxWidth="300" promptText="Password" onKeyPressed="#handleEnterPressed"/>
             <Button text="Login" onAction="#login"/>
