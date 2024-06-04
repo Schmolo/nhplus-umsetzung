@@ -48,7 +48,7 @@ public class LoginController {
         Caregiver caregiver = null;
 
         // Attempt to authenticate the caregiver
-        Caregiver caregiver = caregiverService.authenticate(username, password);
+        caregiver = caregiverService.authenticate(username, password);
         // Check if the authentication was successful
         try {
             caregiver = caregiverService.authenticate(username, password);
