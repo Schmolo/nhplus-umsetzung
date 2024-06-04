@@ -45,30 +45,54 @@ public class NewTreatmentController {
     private Patient patient;
     private Stage stage;
 
+    /**
+     * Initializes the NewTreatmentController with the given AllTreatmentController, Stage, and Patient.
+     * It sets up the necessary listeners for the input fields and disables the 'Add' button until valid input is provided.
+     * It also sets up a converter for the DatePicker to handle LocalDate objects.
+     *
+     * @param controller The AllTreatmentController that this NewTreatmentController is associated with.
+     * @param stage The Stage that this NewTreatmentController is displayed on.
+     * @param patient The Patient that this NewTreatmentController is creating a treatment for.
+     */
     public void initialize(AllTreatmentController controller, Stage stage, Patient patient) {
+        // Set the controller, stage, and patient
         this.controller= controller;
         this.patient = patient;
         this.stage = stage;
 
+        // Initially disable the 'Add' button
         this.buttonAdd.setDisable(true);
+
+        // Create a listener for the input fields
         ChangeListener<String> inputNewPatientListener = (observableValue, oldText, newText) ->
+                // Disable the 'Add' button if the input data is invalid
                 NewTreatmentController.this.buttonAdd.setDisable(NewTreatmentController.this.areInputDataInvalid());
+
+        // Add the listener to the input fields
         this.textFieldBegin.textProperty().addListener(inputNewPatientListener);
         this.textFieldEnd.textProperty().addListener(inputNewPatientListener);
         this.textFieldDescription.textProperty().addListener(inputNewPatientListener);
         this.textAreaRemarks.textProperty().addListener(inputNewPatientListener);
+
+        // Add a listener to the DatePicker to disable the 'Add' button if the date is invalid
         this.datePicker.valueProperty().addListener((observableValue, localDate, t1) -> NewTreatmentController.this.buttonAdd.setDisable(NewTreatmentController.this.areInputDataInvalid()));
+
+        // Set a converter for the DatePicker to handle LocalDate objects
         this.datePicker.setConverter(new StringConverter<>() {
             @Override
             public String toString(LocalDate localDate) {
+                // Convert the LocalDate to a string, or return an empty string if the date is null
                 return (localDate == null) ? "" : DateConverter.convertLocalDateToString(localDate);
             }
 
             @Override
             public LocalDate fromString(String localDate) {
+                // Convert the string to a LocalDate
                 return DateConverter.convertStringToLocalDate(localDate);
             }
         });
+
+        // Display the patient's data
         this.showPatientData();
     }
 

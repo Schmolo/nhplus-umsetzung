@@ -142,14 +142,14 @@ public class AllTreatmentController {
     }
 
     /**
-     * Diese Methode behandelt das Sperren einer Behandlung. Wenn eine Behandlung gesperrt ist, kann sie nicht mehr bearbeitet werden
-     * und wird nach 10 Jahren gelöscht. Diese Aktion ist unwiderruflich.
-     * Die Methode erstellt zunächst einen Bestätigungsdialog, um sicherzustellen, dass der Benutzer die Behandlung wirklich sperren möchte.
-     * Wenn der Benutzer bestätigt, wird die ausgewählte Behandlung aus der Liste entfernt und die 'lockTreatment'-Methode
-     * des TreatmentDao wird mit der Behandlungs-ID als Parameter aufgerufen.
+     * This method handles the locking of a treatment. When a treatment is locked, it can no longer be edited
+     * and will be deleted after 10 years. This action is irreversible.
+     * The method first creates a confirmation dialog to ensure that the user really wants to lock the treatment.
+     * If the user confirms, the selected treatment is removed from the list and the 'lockTreatment' method
+     * of the TreatmentDao is called with the treatment ID as a parameter.
      */
     public void handleLock() {
-        // Erstellen eines Bestätigungs-Dialogs
+        // Create a confirmation dialog
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
         alert.setTitle("Behandlung sperren");
         alert.setHeaderText("Möchten Sie diese Behandlung wirklich sperren?");
@@ -157,24 +157,24 @@ public class AllTreatmentController {
                 "und wird innerhalb von 10 Jahren gelöscht,\n" +
                 "dies ist endgültig!");
 
-        // Erstellen von zwei Schaltflächen: Sperren und Abbrechen
+        // Create two buttons: Lock and Cancel
         ButtonType buttonTypeLock = new ButtonType("Sperren", ButtonBar.ButtonData.OK_DONE);
         ButtonType buttonTypeCancel = new ButtonType("Abbrechen", ButtonBar.ButtonData.CANCEL_CLOSE);
 
-        // Hinzufügen der Schaltflächen zum Dialog
+        // Add the buttons to the dialog
         alert.getButtonTypes().setAll(buttonTypeLock, buttonTypeCancel);
 
-        // Anzeigen des Dialogs und Warten auf die Auswahl des Benutzers
+        // Display the dialog and wait for the user's selection
         Optional<ButtonType> result = alert.showAndWait();
 
-        // Überprüfen, ob die "Sperren"-Schaltfläche ausgewählt wurde
+        // Check if the "Lock" button was selected
         if (result.isPresent() && result.get() == buttonTypeLock) {
-            // Den Index der ausgewählten Behandlung in der Tabelle ermitteln
+            // Determine the index of the selected treatment in the table
             int index = this.tableView.getSelectionModel().getSelectedIndex();
-            // Die ausgewählte Behandlung aus der Liste entfernen
+            // Remove the selected treatment from the list
             Treatment t = this.treatments.remove(index);
 
-            // DAO (Data Access Object) für die Behandlung erstellen
+            // Create a DAO (Data Access Object) for the treatment
             TreatmentDao dao = DaoFactory.getDaoFactory().createTreatmentDao();
             try {
                 dao.lockTreatment(t.getTid());
@@ -182,7 +182,7 @@ public class AllTreatmentController {
                 exception.printStackTrace();
             }
         }
-        // Wenn "Abbrechen" gewählt wurde, passiert nichts und die Methode endet
+        // If "Cancel" was chosen, nothing happens and the method ends
     }
 
 
