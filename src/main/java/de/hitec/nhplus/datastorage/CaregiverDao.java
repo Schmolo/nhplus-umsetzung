@@ -7,13 +7,30 @@ import java.sql.*;
 import java.time.LocalDate;
 import java.util.ArrayList;
 
+/**
+ * This class provides data access operations for the Caregiver model.
+ * It extends the DaoImp class and overrides its methods to provide specific implementations for the Caregiver model.
+ */
 public class CaregiverDao extends DaoImp<Caregiver>{
+
+    /**
+     * This constructor creates a new CaregiverDao with the given database connection.
+     *
+     * @param connection The database connection.
+     */
     public CaregiverDao(Connection connection) {
         super(connection);
     }
 
+    /**
+     * This method returns a PreparedStatement for creating a new caregiver in the database.
+     *
+     * @param caregiver The caregiver to be created.
+     * @return The PreparedStatement for creating the caregiver.
+     */
     @Override
     protected PreparedStatement getCreateStatement(Caregiver caregiver) {
+        // SQL statement for creating a new caregiver
         final String SQL = "INSERT INTO caregiver (username, firstname, surname, dateOfBirth, telephoneNumber, password_hash, isAdmin) " +
                 "VALUES (?, ?, ?, ?, ?, ?, ?)";
         PreparedStatement preparedStatement = null;
@@ -32,10 +49,17 @@ public class CaregiverDao extends DaoImp<Caregiver>{
         return preparedStatement;
     }
 
+    /**
+     * This method returns a PreparedStatement for reading a caregiver from the database by their ID.
+     *
+     * @param key The ID of the caregiver.
+     * @return The PreparedStatement for reading the caregiver.
+     */
     @Override
     protected PreparedStatement getReadByIDStatement(long key) {
         PreparedStatement preparedStatement = null;
         try {
+            // SQL statement for reading a caregiver by their ID
             final String SQL = "SELECT * FROM caregiver WHERE pid = ?";
             preparedStatement = this.connection.prepareStatement(SQL);
             preparedStatement.setLong(1, key);
@@ -46,6 +70,13 @@ public class CaregiverDao extends DaoImp<Caregiver>{
         return null;
     }
 
+    /**
+     * This method returns a Caregiver object created from the data in the given ResultSet.
+     *
+     * @param set The ResultSet containing the caregiver data.
+     * @return The Caregiver object.
+     * @throws SQLException If a database access error occurs.
+     */
     @Override
     protected Caregiver getInstanceFromResultSet(ResultSet set) throws SQLException {
         return new Caregiver(
@@ -60,10 +91,16 @@ public class CaregiverDao extends DaoImp<Caregiver>{
         );
     }
 
+    /**
+     * This method returns a PreparedStatement for reading all caregivers from the database who are not locked.
+     *
+     * @return The PreparedStatement for reading all caregivers.
+     */
     @Override
     protected PreparedStatement getReadAllStatement() {
         PreparedStatement preparedStatement = null;
         try {
+            // SQL statement for reading all caregivers who are not locked
             final String SQL = "SELECT * FROM caregiver WHERE locked is not true";
             preparedStatement = this.connection.prepareStatement(SQL);
         } catch (SQLException exception) {
@@ -72,6 +109,13 @@ public class CaregiverDao extends DaoImp<Caregiver>{
         return preparedStatement;
     }
 
+    /**
+     * This method returns a list of Caregiver objects created from the data in the given ResultSet.
+     *
+     * @param set The ResultSet containing the caregiver data.
+     * @return The list of Caregiver objects.
+     * @throws SQLException If a database access error occurs.
+     */
     @Override
     protected ArrayList<Caregiver> getListFromResultSet(ResultSet set) throws SQLException {
         ArrayList<Caregiver> caregivers = new ArrayList<>();
@@ -81,8 +125,15 @@ public class CaregiverDao extends DaoImp<Caregiver>{
         return caregivers;
     }
 
+    /**
+     * This method returns a PreparedStatement for updating a caregiver in the database.
+     *
+     * @param caregiver The caregiver to be updated.
+     * @return The PreparedStatement for updating the caregiver.
+     */
     @Override
     protected PreparedStatement getUpdateStatement(Caregiver caregiver) {
+        // SQL statement for updating a caregiver
         final String SQL = "UPDATE caregiver SET " +
                 "username = ?, " +
                 "firstname = ?, " +
@@ -109,10 +160,17 @@ public class CaregiverDao extends DaoImp<Caregiver>{
         return preparedStatement;
     }
 
+    /**
+     * This method returns a PreparedStatement for deleting a caregiver from the database by their ID.
+     *
+     * @param key The ID of the caregiver.
+     * @return The PreparedStatement for deleting the caregiver.
+     */
     @Override
     protected PreparedStatement getDeleteStatement(long key) {
         PreparedStatement preparedStatement = null;
         try {
+            // SQL statement for deleting a caregiver by their ID
             final String SQL = "DELETE FROM caregiver WHERE pid = ?";
             preparedStatement = this.connection.prepareStatement(SQL);
             preparedStatement.setLong(1, key);
@@ -122,6 +180,13 @@ public class CaregiverDao extends DaoImp<Caregiver>{
         return preparedStatement;
     }
 
+    /**
+     * This method locks a caregiver in the database by their ID.
+     * The caregiver is locked for 10 years from the current date.
+     *
+     * @param pid The ID of the caregiver.
+     * @throws SQLException If a database access error occurs.
+     */
     public void lockCaregiver(long pid) throws SQLException {
         LocalDate localDate = LocalDate.now().plusYears(10);
         String sql = "UPDATE caregiver SET locked = 1, lockedDate = ? WHERE pid = ?";
@@ -132,6 +197,12 @@ public class CaregiverDao extends DaoImp<Caregiver>{
         }
     }
 
+    /**
+     * This method deletes all expired locks on caregivers in the database.
+     * A lock is considered expired if its lockedDate is before the current date.
+     *
+     * @throws SQLException If a database access error occurs.
+     */
     public void deleteExpiredCaregiverLocks() throws SQLException {
         String sql = "DELETE FROM caregiver WHERE locked = 1 AND lockedDate < ?";
         try (PreparedStatement pstmt = this.connection.prepareStatement(sql)) {
