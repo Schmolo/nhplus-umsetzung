@@ -10,23 +10,37 @@ import javafx.beans.property.SimpleStringProperty;
 import java.time.LocalDate;
 
 public class Caregiver extends Person {
+    // The unique identifier for the Caregiver
     private SimpleLongProperty pid;
+    // The username of the Caregiver
     private final SimpleStringProperty username;
+    // The telephone number of the Caregiver
     private final SimpleStringProperty telephoneNumber;
+    // The date of birth of the Caregiver
     private final SimpleStringProperty dateOfBirth;
+    // A flag indicating whether the Caregiver is an admin
     private final BooleanProperty isAdmin;
+    // The hashed password of the Caregiver
     private final SimpleStringProperty password_hash;
 
+    // A flag indicating whether the Caregiver is locked
     private boolean locked;
+    // The date when the Caregiver was locked
     private String lockedDate;
 
     /**
-     * This is a constructor for the Caregiver class.
+     * This constructor creates a new Caregiver with the given properties.
+     * The password is hashed before it is stored.
      *
+     * @param username The username of the Caregiver.
      * @param firstName The first name of the Caregiver.
      * @param surname The surname of the Caregiver.
-     * @param dateOfBirth The date of birth of the Caregiver. It is a LocalDate object.
-     * @param password The password for the Caregiver. This is not the actual password, but a string that will be hashed to create the password.
+     * @param dateOfBirth The date of birth of the Caregiver.
+     * @param telephoneNumber The telephone number of the Caregiver.
+     * @param password The password of the Caregiver.
+     * @param isAdmin A flag indicating whether the Caregiver is an admin.
+     * @param locked A flag indicating whether the Caregiver is locked.
+     * @param lockedDate The date when the Caregiver was locked.
      */
     public Caregiver(String username, String firstName, String surname, LocalDate dateOfBirth, String telephoneNumber, String password, boolean isAdmin, boolean locked, String lockedDate) {
         super(firstName, surname);
@@ -40,13 +54,17 @@ public class Caregiver extends Person {
     }
 
     /**
-     * This is an overloaded constructor for the Caregiver class.
+     * This constructor creates a new Caregiver with the given properties.
+     * The password is assumed to be already hashed.
      *
      * @param pid The unique identifier for the Caregiver.
+     * @param username The username of the Caregiver.
      * @param firstName The first name of the Caregiver.
      * @param surname The surname of the Caregiver.
-     * @param dateOfBirth The date of birth of the Caregiver. It is a LocalDate object.
-     * @param password_hash The password hash for the Caregiver.
+     * @param dateOfBirth The date of birth of the Caregiver.
+     * @param telephoneNumber The telephone number of the Caregiver.
+     * @param password_hash The hashed password of the Caregiver.
+     * @param isAdmin A flag indicating whether the Caregiver is an admin.
      */
     public Caregiver(long pid, String username, String firstName, String surname, LocalDate dateOfBirth, String telephoneNumber, String password_hash, boolean isAdmin) {
         super(firstName, surname);
