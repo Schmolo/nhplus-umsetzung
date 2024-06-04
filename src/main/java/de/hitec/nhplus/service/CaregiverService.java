@@ -11,8 +11,26 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 
+/**
+ * This class provides services related to the Caregiver model.
+ * It contains a method for authenticating a caregiver based on their username and password.
+ */
 public class CaregiverService {
 
+    /**
+     * This method authenticates a caregiver based on their username and password.
+     * It first checks if the username and password are not null.
+     * Then it establishes a connection to the database and prepares a SQL statement to select the caregiver with the given username who is not locked.
+     * It executes the SQL statement and retrieves the result.
+     * It retrieves the hashed password from the result and checks if it matches the given password.
+     * If the result contains a next row and the password matches, it creates a new Caregiver object with the data from the result and returns it.
+     * If the result does not contain a next row or the password does not match, it returns null.
+     * If a SQL exception occurs, it prints the stack trace and returns null.
+     *
+     * @param username The username of the caregiver.
+     * @param password The password of the caregiver.
+     * @return The authenticated caregiver, or null if the authentication failed.
+     */
     public Caregiver authenticate(String username, String password) {
         if (username == null || password == null) {
             return null;
