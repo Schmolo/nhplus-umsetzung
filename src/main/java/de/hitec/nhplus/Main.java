@@ -1,5 +1,6 @@
 package de.hitec.nhplus;
 
+import de.hitec.nhplus.datastorage.CaregiverDao;
 import de.hitec.nhplus.datastorage.ConnectionBuilder;
 import de.hitec.nhplus.datastorage.PatientDao;
 import de.hitec.nhplus.datastorage.TreatmentDao;
@@ -97,6 +98,7 @@ public class Main extends Application {
         // Create an instance of TreatmentDao
         TreatmentDao treatmentDao = new TreatmentDao(ConnectionBuilder.getConnection());
         PatientDao patientDao = new PatientDao(ConnectionBuilder.getConnection());
+        CaregiverDao caregiverDao = new CaregiverDao(ConnectionBuilder.getConnection());
 
         // Define the task to be executed
         Runnable task = () -> {
@@ -104,6 +106,7 @@ public class Main extends Application {
                 // Call the deleteExpiredLocks() method
                 treatmentDao.deleteExpiredLocks();
                 patientDao.deleteExpiredPatientLocks();
+                caregiverDao.deleteExpiredCaregiverLocks();
 
             } catch (SQLException e) {
                 // Error handling

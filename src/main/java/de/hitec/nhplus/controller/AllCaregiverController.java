@@ -3,7 +3,9 @@ package de.hitec.nhplus.controller;
 import de.hitec.nhplus.Main;
 import de.hitec.nhplus.datastorage.CaregiverDao;
 import de.hitec.nhplus.datastorage.DaoFactory;
+import de.hitec.nhplus.datastorage.PatientDao;
 import de.hitec.nhplus.model.Caregiver;
+import de.hitec.nhplus.model.Patient;
 import de.hitec.nhplus.service.Session;
 import de.hitec.nhplus.utils.AuditLog;
 import javafx.collections.FXCollections;
@@ -18,6 +20,7 @@ import javafx.stage.Stage;
 
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.Optional;
 
 public class AllCaregiverController {
 
@@ -83,7 +86,7 @@ public class AllCaregiverController {
      * it deletes the caregiver from the database and removes it from the table view.
      */
     @FXML
-    public void handleDelete() {
+    public void handleLock() {
         // Check if User has Permission to Delete/Lock
         if (!CheckPermission()) {
             handlenNoPermission();
@@ -101,8 +104,8 @@ public class AllCaregiverController {
         if (selectedCaregiver.isAdmin()) {
             Alert alert = new Alert(Alert.AlertType.ERROR);
             alert.setTitle("Fehler");
-            alert.setHeaderText("Der Nutzer kann nicht gelöscht werden");
-            alert.setContentText("Du kannst keinen Admin löschen.");
+            alert.setHeaderText("Der Nutzer kann nicht gelöscht / gesperrt werden");
+            alert.setContentText("Du kannst keinen Admin löschen / sperren.");
             alert.showAndWait();
             return;
         }
@@ -111,25 +114,47 @@ public class AllCaregiverController {
         if (selectedCaregiver.getPid() == Session.getInstance().getLoggedInCaregiver().getPid()) {
             Alert alert = new Alert(Alert.AlertType.ERROR);
             alert.setTitle("Fehler");
-            alert.setHeaderText("Der Nutzer kann nicht gelöscht werden");
-            alert.setContentText("Du kannst nicht den Nutzer löschen, der du gerade bist.");
+            alert.setHeaderText("Der Nutzer kann nicht gelöscht / gesperrt werden");
+            alert.setContentText("Du kannst nicht den Nutzer löschen / sperren, der du gerade bist.");
             alert.showAndWait();
             return;
         }
 
-        // Create a CaregiverDao to interact with the database
-        CaregiverDao dao = DaoFactory.getDaoFactory().createCaregiverDAO();
+        // Create a confirmation dialog
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setTitle("Patient sperren");
+        alert.setHeaderText("Möchten Sie diesen Patienten wirklich sperren?");
+        alert.setContentText("Ein gesperrter Patient kann nicht mehr bearbeitet werden\n" +
+                "und wird innerhalb von 10 Jahren gelöscht,\n" +
+                "dies ist endgültig!");
 
-        try {
-            // Delete the selected caregiver from the database
-            dao.deleteById(selectedCaregiver.getPid());
+        // Create two buttons: Lock and Cancel
+        ButtonType buttonTypeLock = new ButtonType("Sperren", ButtonBar.ButtonData.OK_DONE);
+        ButtonType buttonTypeCancel = new ButtonType("Abbrechen", ButtonBar.ButtonData.CANCEL_CLOSE);
 
-            // Remove the selected caregiver from the table view
-            this.caregivers.remove(selectedCaregiver);
-            AuditLog.writeLog(Session.getInstance().getLoggedInCaregiver(), "Deleted caregiver with ID: " + selectedCaregiver.getPid());
-        } catch (SQLException exception) {
-            exception.printStackTrace();
+        // Add the buttons to the dialog
+        alert.getButtonTypes().setAll(buttonTypeLock, buttonTypeCancel);
+
+        // Display the dialog and wait for the user's selection
+        Optional<ButtonType> result = alert.showAndWait();
+
+        // Check if the "Lock" button was selected
+        if (result.isPresent() && result.get() == buttonTypeLock) {
+            // Determine the index of the selected patient in the table
+            int index = this.tableView.getSelectionModel().getSelectedIndex();
+            // Remove the selected patient from the list
+            Caregiver c = this.caregivers.remove(index);
+
+            // Create a DAO (Data Access Object) for the patient
+            PatientDao dao = DaoFactory.getDaoFactory().createPatientDAO();
+            try {
+                dao.lockPatient(c.getPid());
+                AuditLog.writeLog(Session.getInstance().getLoggedInCaregiver(), "Locked Caregiver with ID: " + c.getPid());
+            } catch (SQLException exception) {
+                exception.printStackTrace();
+            }
         }
+        // If "Cancel" was chosen, nothing happens and the method ends
     }
 
     /**

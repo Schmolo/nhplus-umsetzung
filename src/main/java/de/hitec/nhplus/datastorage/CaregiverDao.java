@@ -3,10 +3,8 @@ package de.hitec.nhplus.datastorage;
 import de.hitec.nhplus.model.Caregiver;
 import de.hitec.nhplus.utils.DateConverter;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
+import java.time.LocalDate;
 import java.util.ArrayList;
 
 public class CaregiverDao extends DaoImp<Caregiver>{
@@ -66,7 +64,7 @@ public class CaregiverDao extends DaoImp<Caregiver>{
     protected PreparedStatement getReadAllStatement() {
         PreparedStatement preparedStatement = null;
         try {
-            final String SQL = "SELECT * FROM caregiver";
+            final String SQL = "SELECT * FROM caregiver WHERE locked is not true";
             preparedStatement = this.connection.prepareStatement(SQL);
         } catch (SQLException exception) {
             exception.printStackTrace();
@@ -122,5 +120,23 @@ public class CaregiverDao extends DaoImp<Caregiver>{
             exception.printStackTrace();
         }
         return preparedStatement;
+    }
+
+    public void lockCaregiver(long pid) throws SQLException {
+        LocalDate localDate = LocalDate.now().plusYears(10);
+        String sql = "UPDATE caregiver SET locked = 1, lockedDate = ? WHERE pid = ?";
+        try (PreparedStatement pstmt = this.connection.prepareStatement(sql)) {
+            pstmt.setDate(1, Date.valueOf(localDate));
+            pstmt.setLong(2, pid);
+            pstmt.executeUpdate();
+        }
+    }
+
+    public void deleteExpiredCaregiverLocks() throws SQLException {
+        String sql = "DELETE FROM caregiver WHERE locked = 1 AND lockedDate < ?";
+        try (PreparedStatement pstmt = this.connection.prepareStatement(sql)) {
+            pstmt.setDate(1, Date.valueOf(LocalDate.now()));
+            pstmt.executeUpdate();
+        }
     }
 }

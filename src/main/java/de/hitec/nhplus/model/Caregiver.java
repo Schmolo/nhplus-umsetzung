@@ -17,6 +17,9 @@ public class Caregiver extends Person {
     private final BooleanProperty isAdmin;
     private final SimpleStringProperty password_hash;
 
+    private boolean locked;
+    private String lockedDate;
+
     /**
      * This is a constructor for the Caregiver class.
      *
@@ -25,13 +28,15 @@ public class Caregiver extends Person {
      * @param dateOfBirth The date of birth of the Caregiver. It is a LocalDate object.
      * @param password The password for the Caregiver. This is not the actual password, but a string that will be hashed to create the password.
      */
-    public Caregiver(String username, String firstName, String surname, LocalDate dateOfBirth, String telephoneNumber, String password, boolean isAdmin) {
+    public Caregiver(String username, String firstName, String surname, LocalDate dateOfBirth, String telephoneNumber, String password, boolean isAdmin, boolean locked, String lockedDate) {
         super(firstName, surname);
         this.username = new SimpleStringProperty(username);
         this.dateOfBirth = new SimpleStringProperty(DateConverter.convertLocalDateToString(dateOfBirth));
         this.telephoneNumber = new SimpleStringProperty(telephoneNumber);
         this.password_hash = new SimpleStringProperty(PasswordUtil.generatePassword(password));
         this.isAdmin = new SimpleBooleanProperty(isAdmin);
+        this.locked = locked;
+        this.lockedDate = lockedDate;
     }
 
     /**
