@@ -206,6 +206,7 @@ public class AllPatientController {
     private void doUpdate(TableColumn.CellEditEvent<Patient, String> event) {
         try {
             this.dao.update(event.getRowValue());
+            AuditLog.writeLog(Session.getInstance().getLoggedInCaregiver(), "Updated patient with ID: " + event.getRowValue().getPid());
         } catch (SQLException exception) {
             exception.printStackTrace();
         }
