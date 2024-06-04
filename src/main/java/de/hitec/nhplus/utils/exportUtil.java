@@ -8,8 +8,21 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 
+/**
+ * This class provides utility methods for exporting data.
+ */
 public class exportUtil {
 
+    /**
+     * This method exports a list of patients to a CSV file.
+     * It first creates a temporary file for the CSV export.
+     * Then it writes the header to the CSV file.
+     * After that, it writes the data of each patient to the CSV file.
+     * Finally, it opens the temporary file using the default system application.
+     *
+     * @param patients The list of patients to be exported.
+     * @throws IOException If an I/O error occurs.
+     */
     public static void exportToCSV(ObservableList<Patient> patients) throws IOException {
         // Create a temporary file for CSV export
         File tempFile = File.createTempFile("export", ".csv");
@@ -43,7 +56,14 @@ public class exportUtil {
         openFile(tempFile);
     }
 
-    // Method to open a file using the default system application
+    /**
+     * This method opens a file using the default system application.
+     * It first checks if the desktop is supported.
+     * If it is, it opens the file.
+     *
+     * @param file The file to be opened.
+     * @throws IOException If an I/O error occurs.
+     */
     private static void openFile(File file) throws IOException {
         if (java.awt.Desktop.isDesktopSupported()) {
             java.awt.Desktop.getDesktop().open(file);
