@@ -6,3 +6,7 @@
 4. Run Main.java from src/main/java/de/hitec/nhplus/ and test if db is working
 
 *Now you should be able to test*
+
+JavaDocs Page: [schmolo.github.io/nhplus-umsetzung/](https://schmolo.github.io/nhplus-umsetzung/)
+
+JavaDocs Raw: [docs-pages](https://github.com/Schmolo/nhplus-umsetzung/tree/docs-pages/docs)
