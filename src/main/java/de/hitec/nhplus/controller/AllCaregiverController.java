@@ -5,6 +5,7 @@ import de.hitec.nhplus.datastorage.CaregiverDao;
 import de.hitec.nhplus.datastorage.DaoFactory;
 import de.hitec.nhplus.model.Caregiver;
 import de.hitec.nhplus.service.Session;
+import de.hitec.nhplus.utils.AuditLog;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -91,6 +92,7 @@ public class AllCaregiverController {
         try {
             dao.deleteById(selectedCaregiver.getPid());
             this.caregivers.remove(selectedCaregiver);
+            AuditLog.writeLog(Session.getInstance().getLoggedInCaregiver(), "Deleted caregiver with ID: " + selectedCaregiver.getPid());
         } catch (SQLException exception) {
             exception.printStackTrace();
         }

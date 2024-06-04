@@ -34,9 +34,15 @@ public class LoginController {
     private void login(ActionEvent event) {
         String username = usernameField.getText();
         String password = passwordField.getText();
+        Caregiver caregiver = null;
 
+        try {
+            caregiver = caregiverService.authenticate(username, password);
+        } catch (Exception e) {
+            e.printStackTrace();
+            errorLabel.setText("Login failed. Please check your credentials.");
+        }
 
-        Caregiver caregiver = caregiverService.authenticate(username, password);
         if (caregiver != null) {
             Session.getInstance().setLoggedInCaregiver(caregiver);
             FXMLLoader loader = new FXMLLoader(Main.class.getResource("/de/hitec/nhplus/MainWindowView.fxml"));
@@ -44,6 +50,7 @@ public class LoginController {
                 mainBorderPane.setCenter(loader.load());
             } catch (IOException exception) {
                 exception.printStackTrace();
+                errorLabel.setText("Login failed. Please check your credentials.");
             }
         } else {
             errorLabel.setText("Login failed. Please check your credentials.");

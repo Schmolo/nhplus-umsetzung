@@ -5,6 +5,8 @@ import de.hitec.nhplus.datastorage.PatientDao;
 import de.hitec.nhplus.datastorage.TreatmentDao;
 import de.hitec.nhplus.model.Patient;
 import de.hitec.nhplus.model.Treatment;
+import de.hitec.nhplus.service.Session;
+import de.hitec.nhplus.utils.AuditLog;
 import de.hitec.nhplus.utils.DateConverter;
 import de.hitec.nhplus.utils.exportUtil;
 import javafx.beans.value.ChangeListener;
@@ -259,6 +261,7 @@ public class AllPatientController {
             PatientDao dao = DaoFactory.getDaoFactory().createPatientDAO();
             try {
                 dao.lockPatient(p.getPid());
+                AuditLog.writeLog(Session.getInstance().getLoggedInCaregiver(), "Locked patient with ID: " + p.getPid());
             } catch (SQLException exception) {
                 exception.printStackTrace();
             }
@@ -283,6 +286,7 @@ public class AllPatientController {
         String lockedDate = null;
         try {
             this.dao.create(new Patient(firstName, surname, date, careLevel, roomNumber, locked, lockedDate));
+            AuditLog.writeLog(Session.getInstance().getLoggedInCaregiver(), "Added patient: " + firstName + " " + surname);
         } catch (SQLException exception) {
             exception.printStackTrace();
         }
@@ -301,6 +305,7 @@ public class AllPatientController {
         if (selectedPatients != null && !selectedPatients.isEmpty()) {
             try {
                 exportPatientData(selectedPatients);
+                AuditLog.writeLog(Session.getInstance().getLoggedInCaregiver(), "Exported patient data");
             } catch (Exception e) {
                 e.printStackTrace();
             }

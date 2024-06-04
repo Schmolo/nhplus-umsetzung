@@ -2,6 +2,8 @@ package de.hitec.nhplus.controller;
 
 import de.hitec.nhplus.datastorage.DaoFactory;
 import de.hitec.nhplus.datastorage.CaregiverDao;
+import de.hitec.nhplus.service.Session;
+import de.hitec.nhplus.utils.AuditLog;
 import javafx.beans.value.ChangeListener;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
@@ -75,6 +77,7 @@ public class NewCaregiverController {
         CaregiverDao dao = DaoFactory.getDaoFactory().createCaregiverDAO();
         try {
             dao.create(caregiver);
+            AuditLog.writeLog(Session.getInstance().getLoggedInCaregiver(), "Caregiver created: " + caregiver.getUsername());
         } catch (SQLException exception) {
             exception.printStackTrace();
         }
