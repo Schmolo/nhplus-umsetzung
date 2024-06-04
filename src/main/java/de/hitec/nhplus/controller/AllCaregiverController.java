@@ -5,6 +5,7 @@ import de.hitec.nhplus.datastorage.CaregiverDao;
 import de.hitec.nhplus.datastorage.DaoFactory;
 import de.hitec.nhplus.model.Caregiver;
 import de.hitec.nhplus.service.Session;
+import de.hitec.nhplus.utils.AuditLog;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -83,6 +84,11 @@ public class AllCaregiverController {
      */
     @FXML
     public void handleDelete() {
+        // Check if User has Permission to Delete/Lock
+        if (!CheckPermission()) {
+            handlenNoPermission();
+            return;
+        }
         // Get the selected caregiver from the table view
         Caregiver selectedCaregiver = this.tableView.getSelectionModel().getSelectedItem();
 
@@ -120,6 +126,7 @@ public class AllCaregiverController {
 
             // Remove the selected caregiver from the table view
             this.caregivers.remove(selectedCaregiver);
+            AuditLog.writeLog(Session.getInstance().getLoggedInCaregiver(), "Deleted caregiver with ID: " + selectedCaregiver.getPid());
         } catch (SQLException exception) {
             exception.printStackTrace();
         }
@@ -131,6 +138,10 @@ public class AllCaregiverController {
      */
     @FXML
     public void handleNewCaregiver() {
+        if (!CheckPermission()) {
+            handlenNoPermission();
+            return;
+        }
         newCaregiverWindow();
     }
 
@@ -142,6 +153,7 @@ public class AllCaregiverController {
     @FXML
     public void handleMouseClick() {
         tableView.setOnMouseClicked(event -> {
+            if (!CheckPermission()) { return; }
             Caregiver caregiver = tableView.getSelectionModel().getSelectedItem();
             if (event.getClickCount() == 2 && (caregiver != null)) {
                 CaregiverWindow(caregiver);
@@ -215,5 +227,16 @@ public class AllCaregiverController {
             // If an IOException occurs, print its stack trace
             exception.printStackTrace();
         }
+    }
+    public boolean CheckPermission() {
+        return Session.getInstance().getLoggedInCaregiver().isAdmin();
+    }
+
+    private void handlenNoPermission() {
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle("Error");
+        alert.setHeaderText("No permission");
+        alert.setContentText("You do not have permission to perform this action.");
+        alert.showAndWait();
     }
 }

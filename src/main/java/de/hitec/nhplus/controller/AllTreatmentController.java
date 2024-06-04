@@ -4,6 +4,8 @@ import de.hitec.nhplus.Main;
 import de.hitec.nhplus.datastorage.DaoFactory;
 import de.hitec.nhplus.datastorage.PatientDao;
 import de.hitec.nhplus.datastorage.TreatmentDao;
+import de.hitec.nhplus.service.Session;
+import de.hitec.nhplus.utils.AuditLog;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -178,6 +180,7 @@ public class AllTreatmentController {
             TreatmentDao dao = DaoFactory.getDaoFactory().createTreatmentDao();
             try {
                 dao.lockTreatment(t.getTid());
+                AuditLog.writeLog(Session.getInstance().getLoggedInCaregiver(), "Locked treatment with ID: " + t.getTid());
             } catch (SQLException exception) {
                 exception.printStackTrace();
             }

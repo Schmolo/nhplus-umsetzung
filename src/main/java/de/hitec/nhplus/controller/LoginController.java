@@ -45,11 +45,17 @@ public class LoginController {
         // Retrieve the username and password from the input fields
         String username = usernameField.getText();
         String password = passwordField.getText();
+        Caregiver caregiver = null;
 
         // Attempt to authenticate the caregiver
         Caregiver caregiver = caregiverService.authenticate(username, password);
-
         // Check if the authentication was successful
+        try {
+            caregiver = caregiverService.authenticate(username, password);
+        } catch (Exception e) {
+            e.printStackTrace();
+            errorLabel.setText("Login failed. Please check your credentials.");
+        }
         if (caregiver != null) {
             // Set the logged in caregiver in the session
             Session.getInstance().setLoggedInCaregiver(caregiver);
@@ -60,6 +66,7 @@ public class LoginController {
                 mainBorderPane.setCenter(loader.load());
             } catch (IOException exception) {
                 exception.printStackTrace();
+                errorLabel.setText("Login failed. Please check your credentials.");
             }
         } else {
             // Display an error message

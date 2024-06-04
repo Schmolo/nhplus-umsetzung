@@ -2,6 +2,8 @@ package de.hitec.nhplus.controller;
 
 import de.hitec.nhplus.datastorage.DaoFactory;
 import de.hitec.nhplus.datastorage.CaregiverDao;
+import de.hitec.nhplus.service.Session;
+import de.hitec.nhplus.utils.AuditLog;
 import de.hitec.nhplus.utils.PasswordUtil;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
@@ -57,6 +59,14 @@ public class CaregiverController {
 
     @FXML
     public void handleChange(){
+        if (!areInputDataInvalid()) {
+            invalidData();
+            return;
+        }
+        if (!isTelephoneValid()) {
+            invalidTelephone();
+            return;
+        }
         this.caregiver.setDateOfBirth(this.datePickerDateOfBirth.getValue().toString());
         this.caregiver.setFirstName(this.textFieldFirstName.getText());
         this.caregiver.setSurname(this.textFieldSurname.getText());
@@ -77,6 +87,7 @@ public class CaregiverController {
         CaregiverDao dao = DaoFactory.getDaoFactory().createCaregiverDAO();
         try {
             dao.update(this.caregiver);
+            AuditLog.writeLog(Session.getInstance().getLoggedInCaregiver(), "Caregiver updated: " + caregiver.getUsername());
         } catch (SQLException exception) {
             exception.printStackTrace();
         }
@@ -85,5 +96,29 @@ public class CaregiverController {
     @FXML
     public void handleCancel(){
         stage.close();
+    }
+
+    private boolean areInputDataInvalid() {
+        return this.textFieldFirstName.getText() != null && this.textFieldSurname.getText() != null && this.textFieldTelephoneNumber.getText() != null && this.textFieldUsername.getText() != null;
+    }
+
+    private boolean isTelephoneValid() {
+        return this.textFieldTelephoneNumber.getText().matches("^[0-9\\-\\s]{4,15}$");
+    }
+
+    private void invalidData() {
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle("Invalid Input");
+        alert.setHeaderText("Invalid input data");
+        alert.setContentText("Please fill in all fields.");
+        alert.showAndWait();
+    }
+
+    private void invalidTelephone() {
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle("Invalid Input");
+        alert.setHeaderText("Invalid telephone number");
+        alert.setContentText("Please enter a valid telephone number. (4-15 digits)");
+        alert.showAndWait();
     }
 }
