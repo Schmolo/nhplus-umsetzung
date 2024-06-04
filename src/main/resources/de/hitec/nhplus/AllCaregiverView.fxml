@@ -21,7 +21,7 @@
         <HBox layoutX="420.0" layoutY="450.0" spacing="10.0" AnchorPane.bottomAnchor="15.0" AnchorPane.leftAnchor="15.0" AnchorPane.rightAnchor="15.0">
             <children>
                 <Button fx:id="btnAdd" onAction="#handleNewCaregiver" mnemonicParsing="false" prefWidth="90.0" text="Hinzufügen" />
-                <Button fx:id="btnDelete" onAction="#handleDelete" mnemonicParsing="false" prefWidth="90.0" text="Löschen" />
+                <Button fx:id="btnLock" onAction="#handleLock" mnemonicParsing="false" prefWidth="90.0" text="Sperren" />
             </children>
         </HBox>
         <HBox alignment="TOP_CENTER" layoutX="10.0" layoutY="10.0" prefWidth="200.0" spacing="25.0" AnchorPane.leftAnchor="5.0" AnchorPane.rightAnchor="5.0" AnchorPane.topAnchor="5.0">

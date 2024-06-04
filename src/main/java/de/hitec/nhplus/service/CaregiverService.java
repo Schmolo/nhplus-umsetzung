@@ -20,7 +20,7 @@ public class CaregiverService {
         Caregiver caregiver = null;
         try {
             Connection connection = ConnectionBuilder.getConnection();
-            PreparedStatement statement = connection.prepareStatement("SELECT * FROM caregiver WHERE username = ?");
+            PreparedStatement statement = connection.prepareStatement("SELECT * FROM caregiver WHERE username = ? AND locked is not true");
             statement.setString(1, username);
 
             ResultSet resultSet = statement.executeQuery();

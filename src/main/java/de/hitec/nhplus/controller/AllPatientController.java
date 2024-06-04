@@ -206,6 +206,7 @@ public class AllPatientController {
     private void doUpdate(TableColumn.CellEditEvent<Patient, String> event) {
         try {
             this.dao.update(event.getRowValue());
+            AuditLog.writeLog(Session.getInstance().getLoggedInCaregiver(), "Updated patient with ID: " + event.getRowValue().getPid());
         } catch (SQLException exception) {
             exception.printStackTrace();
         }
@@ -225,14 +226,17 @@ public class AllPatientController {
         }
     }
 
+
     /**
-     * This method handles events fired by the button to delete patients. It calls {@link PatientDao} to delete the
-     * patient from the database and removes the object from the list, which is the data source of the
-     * <code>TableView</code>.
+     * This method handles the locking of a patient. When a patient is locked, they can no longer be edited
+     * and will be deleted after 10 years. This action is irreversible.
+     * The method first creates a confirmation dialog to ensure that the user really wants to lock the patient.
+     * If the user confirms, the selected patient is removed from the list and the 'lockPatient' method
+     * of the PatientDao is called with the patient ID as a parameter.
      */
     @FXML
     public void handleLock() {
-        // Erstellen eines Bestätigungs-Dialogs
+        // Create a confirmation dialog
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
         alert.setTitle("Patient sperren");
         alert.setHeaderText("Möchten Sie diesen Patienten wirklich sperren?");
@@ -240,24 +244,24 @@ public class AllPatientController {
                 "und wird innerhalb von 10 Jahren gelöscht,\n" +
                 "dies ist endgültig!");
 
-        // Erstellen von zwei Schaltflächen: Sperren und Abbrechen
+        // Create two buttons: Lock and Cancel
         ButtonType buttonTypeLock = new ButtonType("Sperren", ButtonBar.ButtonData.OK_DONE);
         ButtonType buttonTypeCancel = new ButtonType("Abbrechen", ButtonBar.ButtonData.CANCEL_CLOSE);
 
-        // Hinzufügen der Schaltflächen zum Dialog
+        // Add the buttons to the dialog
         alert.getButtonTypes().setAll(buttonTypeLock, buttonTypeCancel);
 
-        // Anzeigen des Dialogs und Warten auf die Auswahl des Benutzers
+        // Display the dialog and wait for the user's selection
         Optional<ButtonType> result = alert.showAndWait();
 
-        // Überprüfen, ob die "Sperren"-Schaltfläche ausgewählt wurde
+        // Check if the "Lock" button was selected
         if (result.isPresent() && result.get() == buttonTypeLock) {
-            // Den Index des ausgewählten Patienten in der Tabelle ermitteln
+            // Determine the index of the selected patient in the table
             int index = this.tableView.getSelectionModel().getSelectedIndex();
-            // Den ausgewählten Patienten aus der Liste entfernen
+            // Remove the selected patient from the list
             Patient p = this.patients.remove(index);
 
-            // DAO (Data Access Object) für den Patienten erstellen
+            // Create a DAO (Data Access Object) for the patient
             PatientDao dao = DaoFactory.getDaoFactory().createPatientDAO();
             try {
                 dao.lockPatient(p.getPid());
@@ -266,7 +270,7 @@ public class AllPatientController {
                 exception.printStackTrace();
             }
         }
-        // Wenn "Abbrechen" gewählt wurde, passiert nichts und die Methode endet
+        // If "Cancel" was chosen, nothing happens and the method ends
     }
 
     /**

@@ -229,55 +229,74 @@ public class TreatmentDao extends DaoImp<Treatment> {
 
 
 
+    /**
+     * This method locks a treatment for a specified period of time.
+     * It updates the 'locked' field of the treatment record in the database to 1, indicating that the treatment is locked.
+     * It also sets the 'lockedDate' field to the current date plus 10 years, indicating the date when the lock will expire.
+     *
+     * @param tid The ID of the treatment to be locked.
+     * @throws SQLException if a database error occurs.
+     */
     public void lockTreatment(long tid) throws SQLException {
-        int intValue = (int) tid; // Das gefällt mir nicht aber das bleibt erstmal so falls ich es nicht ändern kann
+        // Convert the treatment ID to an integer. This is a temporary solution and may need to be revised.
+        int intValue = (int) tid;
+
+        // Calculate the lock date as the current date plus 10 years.
         LocalDate lockDate = LocalDate.now().plusYears(10);
+
+        // Prepare the SQL query to update the 'locked' and 'lockedDate' fields of the treatment record.
         String sql = "UPDATE treatment SET locked = 1, lockedDate = ? WHERE tid = ?";
+
+        // Use a try-with-resources statement to automatically close the PreparedStatement object after use.
         try (PreparedStatement pstmt = this.connection.prepareStatement(sql)) {
+            // Set the 'lockedDate' parameter in the SQL query.
             pstmt.setDate(1, Date.valueOf(lockDate));
+
+            // Set the 'tid' parameter in the SQL query.
             pstmt.setLong(2, tid);
+
+            // Execute the SQL update query.
             pstmt.executeUpdate();
         }
-
     }
 
 
 
     /**
-     * Diese Methode löscht alle Behandlungen, deren Sperrdatum abgelaufen ist.
-     * Sie durchläuft alle gesperrten Behandlungen in der Datenbank und prüft, ob das aktuelle Datum nach dem Sperrdatum liegt.
-     * Wenn dies der Fall ist, wird die Behandlung gelöscht.
+     * This method deletes all treatments whose lock date has expired.
+     * It goes through all locked treatments in the database and checks if the current date is after the lock date.
+     * If this is the case, the treatment is deleted.
      *
-     * @throws SQLException wenn ein Datenbankfehler auftritt
+     * @throws SQLException if a database error occurs
      */
     public void deleteExpiredLocks() throws SQLException {
         // Debug
         // System.out.println("deleteExpiredLocks");
 
-        // Das aktuelle Datum abrufen
+        // Retrieve the current date
         LocalDate currentDate = LocalDate.now();
 
-        // SQL-Abfrage erstellen, um alle gesperrten Behandlungen abzurufen
+        // Create SQL query to retrieve all locked treatments
         String sql = "SELECT * FROM treatment WHERE locked = 1";
 
-        // Try-with-resources-Anweisung, um sicherzustellen, dass die Ressourcen ordnungsgemäß freigegeben werden
+        // Try-with-resources statement to ensure resources are properly released
         try (PreparedStatement pstmt = this.connection.prepareStatement(sql)) {
-            // Die Abfrage ausführen und das Ergebnis abrufen
+            // Execute the query and retrieve the result
             ResultSet resultSet = pstmt.executeQuery();
 
             while (resultSet.next()) {
-                // Das Sperrdatum als Long-Wert (Millisekunden seit der Unix-Epoche) abrufen
+                // Retrieve the lock date as a long value (milliseconds since the Unix epoch)
                 long lockedDateMillis = resultSet.getLong("lockedDate");
 
-                // Den Long-Wert in ein LocalDate-Objekt umwandeln
+                // Convert the long value to a LocalDate object
                 LocalDate lockedDate = Instant.ofEpochMilli(lockedDateMillis).atZone(ZoneId.systemDefault()).toLocalDate();
 
-                // Überprüfen, ob das aktuelle Datum nach dem Sperrdatum liegt
+                // Check if the current date is after the lock date
                 if (currentDate.isAfter(lockedDate)) {
-                    // Die Behandlungs-ID abrufen
+                    // Retrieve the treatment ID
                     long tid = resultSet.getLong("tid");
 
-                    // Die Behandlung löschen
+                    // Delete the treatment
                     deleteById(tid);
                 }
             }

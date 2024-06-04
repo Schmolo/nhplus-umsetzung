@@ -96,7 +96,9 @@ public class SetUpDB {
                 "   dateOfBirth TEXT NOT NULL, " +
                 "   telephoneNumber TEXT NOT NULL, " +
                 "   isAdmin BOOLEAN NOT NULL, " +
-                "   password_hash TEXT NOT NULL " +
+                "   password_hash TEXT NOT NULL, " +
+                "   locked BOOLEAN," +
+                "   lockedDate TEXT" +
                 ");";
         try (Statement statement = connection.createStatement()) {
             statement.execute(SQL);
@@ -108,8 +110,8 @@ public class SetUpDB {
     private static void setUpCaregivers() {
         try {
             CaregiverDao dao = DaoFactory.getDaoFactory().createCaregiverDAO();
-            dao.create(new Caregiver("admin", "admin", "admin", convertStringToLocalDate("2000-01-01"), "0123-456-789", "admin", true));
-            dao.create(new Caregiver("notadmin","notadmin", "notadmin", convertStringToLocalDate("1970-01-01"), "0123-456-789", "notadmin", false));
+            dao.create(new Caregiver("admin", "admin", "admin", convertStringToLocalDate("2000-01-01"), "0123-456-789", "admin", true, false, null));
+            dao.create(new Caregiver("notadmin","notadmin", "notadmin", convertStringToLocalDate("1970-01-01"), "0123-456-789", "notadmin", false, false, null));
         } catch (SQLException exception) {
             exception.printStackTrace();
         }

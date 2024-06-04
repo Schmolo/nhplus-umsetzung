@@ -170,21 +170,52 @@ public class PatientDao extends DaoImp<Patient> {
         return preparedStatement;
     }
 
+    /**
+     * This method locks a patient for a specified period of time.
+     * It updates the 'locked' field of the patient record in the database to 1, indicating that the patient is locked.
+     * It also sets the 'lockedDate' field to the current date plus 10 years, indicating the date when the lock will expire.
+     *
+     * @param pid The ID of the patient to be locked.
+     * @throws SQLException if a database error occurs.
+     */
 
     public void lockPatient(long pid) throws SQLException {
+        // Calculate the lock date as the current date plus 10 years.
         LocalDate lockDate = LocalDate.now().plusYears(10);
+
+        // Prepare the SQL query to update the 'locked' and 'lockedDate' fields of the patient record.
         String sql = "UPDATE patient SET locked = 1, lockedDate = ? WHERE pid = ?";
+
+        // Use a try-with-resources statement to automatically close the PreparedStatement object after use.
         try (PreparedStatement pstmt = this.connection.prepareStatement(sql)) {
+            // Set the 'lockedDate' parameter in the SQL query.
             pstmt.setDate(1, Date.valueOf(lockDate));
+
+            // Set the 'pid' parameter in the SQL query.
             pstmt.setLong(2, pid);
+
+            // Execute the SQL update query.
             pstmt.executeUpdate();
         }
     }
 
+    /**
+     * This method deletes all patients whose lock date has expired.
+     * It goes through all locked patients in the database and checks if the current date is after the lock date.
+     * If this is the case, the patient is deleted.
+     *
+     * @throws SQLException if a database error occurs.
+     */
     public void deleteExpiredPatientLocks() throws SQLException {
+        // Prepare the SQL query to delete all patients whose 'lockedDate' is before the current date.
         String sql = "DELETE FROM patient WHERE lockedDate < ?";
+
+        // Use a try-with-resources statement to automatically close the PreparedStatement object after use.
         try (PreparedStatement pstmt = this.connection.prepareStatement(sql)) {
+            // Set the 'lockedDate' parameter in the SQL query to the current date.
             pstmt.setDate(1, Date.valueOf(LocalDate.now()));
+
+            // Execute the SQL delete query.
             pstmt.executeUpdate();
         }
     }

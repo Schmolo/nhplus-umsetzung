@@ -46,16 +46,6 @@ public class NewCaregiverController {
     public void initialize(AllCaregiverController controller, Stage stage) {
         this.controller= controller;
         this.stage = stage;
-
-        this.buttonAdd.setDisable(true);
-        ChangeListener<String> inputNewCaregiverListener = (observableValue, oldText, newText) ->
-                NewCaregiverController.this.buttonAdd.setDisable(NewCaregiverController.this.areInputDataInvalid());
-        this.textFieldFirstName.textProperty().addListener(inputNewCaregiverListener);
-        this.textFieldSurname.textProperty().addListener(inputNewCaregiverListener);
-        this.datePickerDateOfBirth.valueProperty().addListener((observableValue, localDate, t1) -> NewCaregiverController.this.buttonAdd.setDisable(NewCaregiverController.this.areInputDataInvalid()));
-        this.textFieldTelephoneNumber.textProperty().addListener(inputNewCaregiverListener);
-        this.textFieldUsername.textProperty().addListener(inputNewCaregiverListener);
-        this.passwordFieldPassword.textProperty().addListener(inputNewCaregiverListener);
     }
 
     @FXML
@@ -75,7 +65,9 @@ public class NewCaregiverController {
         String telephoneNumber = textFieldTelephoneNumber.getText();
         String password = passwordFieldPassword.getText();
         boolean isAdmin = checkBoxIsAdmin.isSelected();
-        Caregiver caregiver = new Caregiver(username, firstName, surname, dateOfBirth, telephoneNumber, password, isAdmin);
+        boolean isLocked = false;
+        String lockedDate = null;
+        Caregiver caregiver = new Caregiver(username, firstName, surname, dateOfBirth, telephoneNumber, password, isAdmin, isLocked, lockedDate);
         createCaregiver(caregiver);
         controller.readAllAndShowInTableView();
         stage.close();
