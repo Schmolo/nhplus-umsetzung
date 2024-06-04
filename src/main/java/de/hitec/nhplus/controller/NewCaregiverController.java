@@ -60,6 +60,14 @@ public class NewCaregiverController {
 
     @FXML
     public void handleAdd(){
+        if (!areInputDataInvalid()) {
+            invalidData();
+            return;
+        }
+        if (!isTelephoneValid()) {
+            invalidTelephone();
+            return;
+        }
         String username = textFieldUsername.getText();
         String firstName = textFieldFirstName.getText();
         String surname = textFieldSurname.getText();
@@ -89,8 +97,26 @@ public class NewCaregiverController {
     }
 
     private boolean areInputDataInvalid() {
-        return this.textFieldFirstName.getText().isBlank() || this.textFieldSurname.getText().isBlank()
-                || this.datePickerDateOfBirth.getValue() == null || this.textFieldTelephoneNumber.getText().isBlank()
-                || this.textFieldUsername.getText().isBlank() || this.passwordFieldPassword.getText().isBlank();
+        return this.textFieldFirstName.getText() != null && this.textFieldSurname.getText() != null && this.textFieldTelephoneNumber.getText() != null && this.textFieldUsername.getText() != null && this.passwordFieldPassword.getText() != null;
+    }
+
+    private boolean isTelephoneValid() {
+        return this.textFieldTelephoneNumber.getText().matches("^[0-9\\-\\s]{4,15}$");
+    }
+
+    private void invalidData() {
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle("Invalid Input");
+        alert.setHeaderText("Invalid input data");
+        alert.setContentText("Please fill in all fields.");
+        alert.showAndWait();
+    }
+
+    private void invalidTelephone() {
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle("Invalid Input");
+        alert.setHeaderText("Invalid telephone number");
+        alert.setContentText("Please enter a valid telephone number. (4-15 digits)");
+        alert.showAndWait();
     }
 }
