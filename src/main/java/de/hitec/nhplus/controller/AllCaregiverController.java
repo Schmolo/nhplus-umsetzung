@@ -63,6 +63,10 @@ public class AllCaregiverController {
 
     @FXML
     public void handleDelete() {
+        if (!CheckPermission()) {
+            handlenNoPermission();
+            return;
+        }
         Caregiver selectedCaregiver = this.tableView.getSelectionModel().getSelectedItem();
         if (selectedCaregiver == null) {
             return;
@@ -94,12 +98,17 @@ public class AllCaregiverController {
 
     @FXML
     public void handleNewCaregiver() {
+        if (!CheckPermission()) {
+            handlenNoPermission();
+            return;
+        }
         newCaregiverWindow();
     }
 
     @FXML
     public void handleMouseClick() {
         tableView.setOnMouseClicked(event -> {
+            if (!CheckPermission()) { return; }
             Caregiver caregiver = tableView.getSelectionModel().getSelectedItem();
             if (event.getClickCount() == 2 && (caregiver != null)) {
                 CaregiverWindow(caregiver);
@@ -145,5 +154,17 @@ public class AllCaregiverController {
         } catch (IOException exception) {
             exception.printStackTrace();
         }
+    }
+
+    public boolean CheckPermission() {
+        return Session.getInstance().getLoggedInCaregiver().isAdmin();
+    }
+
+    private void handlenNoPermission() {
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle("Error");
+        alert.setHeaderText("No permission");
+        alert.setContentText("You do not have permission to perform this action.");
+        alert.showAndWait();
     }
 }
