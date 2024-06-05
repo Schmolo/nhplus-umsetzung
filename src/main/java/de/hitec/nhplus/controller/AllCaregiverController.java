@@ -146,9 +146,9 @@ public class AllCaregiverController {
             Caregiver c = this.caregivers.remove(index);
 
             // Create a DAO (Data Access Object) for the patient
-            PatientDao dao = DaoFactory.getDaoFactory().createPatientDAO();
+            CaregiverDao dao = DaoFactory.getDaoFactory().createCaregiverDAO();
             try {
-                dao.lockPatient(c.getPid());
+                dao.lockCaregiver(c.getPid());
                 AuditLog.writeLog(Session.getInstance().getLoggedInCaregiver(), "Locked Caregiver with ID: " + c.getPid());
             } catch (SQLException exception) {
                 exception.printStackTrace();
