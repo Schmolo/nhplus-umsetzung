@@ -10,3 +10,11 @@
 JavaDocs Page: [schmolo.github.io/nhplus-umsetzung/](https://schmolo.github.io/nhplus-umsetzung/)
 
 JavaDocs Raw: [docs-pages](https://github.com/Schmolo/nhplus-umsetzung/tree/docs-pages/docs)
+
+Test User
+ Admin:
+  username: admin
+  password: admin
+ Non Admin User:
+  username: notadmin
+  password: notadmin
